@@ -1,0 +1,215 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+
+/*--------------------------------------------------------------
+VARIABLES CSS
+--------------------------------------------------------------*/
+
+:root {
+  /*========== Colores ==========*/
+  --modo-claro:#E1E1E1;
+  --modo-oscuro: #eeeeee;
+  --color-gray: #f8f8f9;
+  --color-main: #CFF80B;
+  --color-second: #FF2257;
+  --texto-principal: #292929;
+  --texto-secundario: #717275;
+
+  /*========== Font and typography ==========*/
+  --font-content: 'Poppins', sans-serif;
+  --font-titles: 'Mario', sans-serif;
+  --font-size-default: 1.1rem;
+  --font-size-h1: 6vw;
+  --font-size-h1-md: 9vw;
+  --font-size-h1-sm: 12vw;
+
+  /*Animaciones*/
+  /*Transición*/
+
+  /*Sombras*/
+  --general--shadow-01: rgba(6, 6, 6, .1);
+  --general--shadow-02: rgba(6, 6, 6, .12);
+  --general--shadow-03: rgba(20, 20, 43, .24);
+
+}
+
+.dark-theme {
+  --modo-claro:#1E1E1E;
+  --modo-oscuro: #111111;
+  --color-main: #FFFF99;
+  --color-second: #FF99A1;
+  --texto-principal: #ffffff;
+  --texto-secundario: #A1A1A1;
+}
+
+/*--------------------------------------------------------------
+FONT FACE
+--------------------------------------------------------------*/
+/*
+@font-face {
+  font-family: 'Poppins';
+  src: local('Poppins'), url(./fonts/DMSans-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Mario';
+  src: local('Mario'), url(./fonts/ClashDisplay-Regular.ttf) format('truetype');
+}*/
+
+/*--------------------------------------------------------------
+GENERAL STYLES
+--------------------------------------------------------------*/
+
+
+body {
+  background-color: var(--modo-oscuro) !important;
+  color: var(--texto-secundario) !important;
+  font-family: var(--font-content) !important;
+  font-size: var(--font-size-default) !important;
+  transition: background-color 0.5s cubic-bezier(0.25, 0.1, 0.4, -0.12), color 0.5s cubic-bezier(0, 0, 0.05, -0.57);
+}
+
+
+/*meses*/
+.file-tabs{
+  background-color: var(--modo-oscuro);
+}
+.swiper-container {
+  width: 100%; 
+}
+
+.custom-slide {
+  width: auto !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn.swiper-button {
+  padding: 8px 26px;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap; 
+  background-color: var(--modo-claro);
+  color: var(--texto-principal);
+}
+
+.search.form-control{
+  background-color: var(--modo-claro);
+  border-color: var(--modo-claro);
+  padding: 8px 26px 8px 0 !important;
+}
+.input-group-text{
+  background-color: var(--modo-claro) !important;
+  border-color: var(--modo-claro) !important;
+  color: var(--texto-secundario) !important;
+}
+.form-control:focus {
+  color: var(--texto-principal) !important;
+  background-color: var(--modo-claro) !important;
+  border-color: var(--modo-claro) !important;
+  box-shadow: 0 0 0 0 #1e1e1e27 !important;
+}
+/* Estilo para navegadores que soportan ::placeholder */
+::placeholder {
+  padding: 8px 26px 8px 0 !important;
+  opacity: 1; /* Asegúrate de que sea totalmente opaco */
+}
+
+/* Estilo para navegadores Webkit (Chrome, Safari, Edge) */
+::-webkit-input-placeholder {
+  color: var(--texto-secundario) !important; 
+  opacity: 1;
+}
+
+/* Estilo para Mozilla Firefox */
+:-moz-placeholder {
+  color: var(--texto-secundario) !important; 
+  opacity: 1;
+}
+
+::-moz-placeholder {
+  color: var(--texto-secundario) !important; 
+  opacity: 1;
+}
+
+
+/* Estilo para Microsoft Edge y IE */
+:-ms-input-placeholder {
+  color: var(--texto-secundario) !important; 
+  opacity: 1
+}
+
+
+
+.sections {
+  padding: 100px 20px;
+}
+/*--------------------------------------------------------------
+SIDEBAR
+--------------------------------------------------------------*/
+.col-sidebar {
+  position: fixed;
+  background-color: var(--modo-oscuro);
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1100;
+}
+.col-content{
+  width: 100%;
+}
+.btn.btn-sidebar {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  color: var(--texto-principal);
+  border: 0px;
+  background-color: var(--modo-claro);
+}
+.btn.btn-sidebar.dropdown-toggle::after {
+  content: none !important; 
+}
+
+@media (min-width: 576px) {
+  /*--------------------------------------------------------------
+  SIDEBAR
+  --------------------------------------------------------------*/
+  .col-sidebar {
+    top: 0;
+    right: auto;
+    left: 0;
+    width: 92px;
+  }
+  .col-content{
+    max-width: calc(100% - 92px);
+  }
+}
+
+@media (min-width: 768px) {
+
+}
+
+@media (min-width: 992px) {
+  #slide-meses {
+    width: 600px;
+  }
+}
+
+@media (min-width: 1200px) {
+
+}
+
+@media (min-width: 1400px) {
+
+}
+
+@media (min-width: 1200px) {
+
+}
