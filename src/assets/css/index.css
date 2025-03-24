@@ -38,7 +38,7 @@ VARIABLES CSS
 
 }
 
-.dark-theme {
+html.dark {
   --modo-claro:#1E1E1E;
   --modo-oscuro: #111111;
   --color-main: #FFFF99;

@@ -1,11 +1,11 @@
-import React  from 'react';
+import React, { useContext } from 'react';
 import { Dropdown, Button } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Sun, Moon, Plus } from 'react-bootstrap-icons';
-import { useTheme } from '../hooks/useThemes'; 
+import { ThemeContext } from '../theme/ThemeProvider'; 
 
 const SideBar = ({ handleLogout, user, setShowModal }) => {
-    const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme } = useContext(ThemeContext); 
 
     return (
         <div className="d-flex flex-md-column justify-content-between h-100 p-2 p-md-3 align-items-center">

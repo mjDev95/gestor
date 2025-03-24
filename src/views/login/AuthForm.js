@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { db } from "./firebase-config";
+import { db, auth } from "../../db/firebase-config";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { auth } from "./firebase-config"; 
 import { Button, Container, Row, Col, Spinner } from "react-bootstrap";  
+import { useNavigate } from "react-router-dom";
 
-const AuthForm = ({ onLogin }) => {
+const AuthForm = ({ onLogin, user }) => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // Función para el login con Google
   const handleGoogleLogin = async () => {
+    if (user) return; // Si ya hay un usuario, no permitimos el login con Google
+
     setLoading(true);
     const provider = new GoogleAuthProvider();
   
@@ -34,7 +37,8 @@ const AuthForm = ({ onLogin }) => {
           });
         }
         
-        onLogin(user);
+        onLogin(user); // Guardamos al usuario de Google en el estado
+        navigate("/dashboard"); // Redirigimos al Dashboard
       }
     } catch (error) {
       console.error("Error de login:", error);
@@ -42,15 +46,18 @@ const AuthForm = ({ onLogin }) => {
       setLoading(false);
     }
   };
-  
 
   // Función para el login como invitado
   const handleGuestLogin = () => {
+    if (user) return; // Si ya hay un usuario, no permitimos login como invitado
+
     const guestUser = {
       name: "Invitado",
       email: "invitado@ejemplo.com",
     };
-    onLogin(guestUser); // Pasa el usuario invitado a onLogin
+
+    onLogin(guestUser); // Guardamos al usuario invitado en el estado
+    navigate("/dashboard"); // Redirigimos al Dashboard
   };
 
   return (
@@ -62,7 +69,7 @@ const AuthForm = ({ onLogin }) => {
             <Button
               variant="outline-danger"
               onClick={handleGoogleLogin}
-              disabled={loading}
+              disabled={loading || user} // Deshabilitamos si ya hay un usuario logueado
               className="mb-3"
             >
               {loading ? (
@@ -75,6 +82,7 @@ const AuthForm = ({ onLogin }) => {
               <Button
                 variant="outline-primary"
                 onClick={handleGuestLogin}
+                disabled={loading || user} // Deshabilitamos si ya hay un usuario logueado
               >
                 Entrar como Invitado
               </Button>

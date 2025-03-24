@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
-import { auth } from "./firebase-config";
-import { agregarGasto, obtenerGastos } from "./firestoreService";
+import { auth } from "../../db/firebase-config";
+import { agregarGasto, obtenerGastos } from "../../firestoreService";
 import { Container, Row, Col, Form, InputGroup } from "react-bootstrap";
-import MesesTabs from './components/MonthTabs';
-import SideBar from './components/SideBar';
-import AddExpenseModal from './components/AddExpenseModal';
+import MesesTabs from '../../components/MonthTabs';
+import SideBar from '../../components/SideBar';
+import AddExpenseModal from '../../components/AddExpenseModal';
 
 
 const Dashboard = ({ user, onLogout }) => {
