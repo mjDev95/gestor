@@ -1,65 +1,49 @@
-import React, { useState } from "react";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { db, auth } from "../../db/firebase-config";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
 import { Button, Container, Row, Col, Spinner } from "react-bootstrap";  
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-const AuthForm = ({ onLogin, user }) => {
+
+const AuthForm = () => {
   const [loading, setLoading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const navigate = useNavigate();
+  const { user, handleLogin } = useAuth();
 
-  // Función para el login con Google
-  const handleGoogleLogin = async () => {
-    if (user) return; // Si ya hay un usuario, no permitimos el login con Google
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    } else {
+      setIsLoaded(true);
+    }
+  }, [user, navigate]);
+
+  const handleLoginClick = async (type) => {
+    if (user) return;
 
     setLoading(true);
-    const provider = new GoogleAuthProvider();
-  
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-  
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(userRef);
-  
-        if (!docSnap.exists()) {
-          await setDoc(userRef, {
-            nombre: user.displayName || "Usuario",
-            email: user.email,
-            fotoURL: user.photoURL || "",
-            creadoEn: new Date(),
-            configuracion: { tema: "claro" }, 
-            moneda: "MXN",
-            categorias: ["Alimentos", "Transporte", "Entretenimiento"],
-            ingresosMensuales: 0
-          });
-        }
-        
-        onLogin(user); // Guardamos al usuario de Google en el estado
-        navigate("/dashboard"); // Redirigimos al Dashboard
+      const currentUser = await handleLogin(type);
+      if (currentUser) {
+        navigate("/dashboard");
       }
     } catch (error) {
-      console.error("Error de login:", error);
+      console.error(`Error al iniciar sesión con ${type}:`, error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para el login como invitado
-  const handleGuestLogin = () => {
-    if (user) return; // Si ya hay un usuario, no permitimos login como invitado
-
-    const guestUser = {
-      name: "Invitado",
-      email: "invitado@ejemplo.com",
-    };
-
-    onLogin(guestUser); // Guardamos al usuario invitado en el estado
-    navigate("/dashboard"); // Redirigimos al Dashboard
+  const backgroundClasses = `position-fixed top-0 left-0 w-100 h-100 d-flex justify-content-center align-items-center`;
+  const backgroundStyle = {
+    backgroundColor: `var(--modo-oscuro)`,
+    zIndex: 9999
   };
 
+  // Mostrar fondo de carga hasta que se verifique el estado de autenticación
+  if (!isLoaded) {
+    return <div className={backgroundClasses} style={backgroundStyle}/>;
+  }
   return (
     <Container className="mt-5">
       <Row className="justify-content-center">
@@ -68,8 +52,8 @@ const AuthForm = ({ onLogin, user }) => {
           <div className="text-center mt-4">
             <Button
               variant="outline-danger"
-              onClick={handleGoogleLogin}
-              disabled={loading || user} // Deshabilitamos si ya hay un usuario logueado
+              onClick={() => handleLoginClick("google")}
+              disabled={loading || user}
               className="mb-3"
             >
               {loading ? (
@@ -81,8 +65,8 @@ const AuthForm = ({ onLogin, user }) => {
             <div>
               <Button
                 variant="outline-primary"
-                onClick={handleGuestLogin}
-                disabled={loading || user} // Deshabilitamos si ya hay un usuario logueado
+                onClick={() => handleLoginClick("guest")}
+                disabled={loading || user} 
               >
                 Entrar como Invitado
               </Button>

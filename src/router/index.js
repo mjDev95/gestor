@@ -1,32 +1,14 @@
-import { useState, useEffect } from "react";
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
 import AuthForm from '../views/login/AuthForm'; 
 import Dashboard from '../views/admin/Dashboard';
 import PUBLIC_ROUTE from './routes/publicRoutes'; 
 import PROTECTED_ROUTE from './routes/protectedRoutes';
 import ERROR_ROUTE from './routes/errorRoutes';
 import ProtectedRoute from './components/ProtectedRoute';
-import { auth } from "../db/firebase-config"; 
 
 const Router = () => {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Aquí comprobamos si el usuario está autenticado
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogin = (user) => {
-    setUser(user);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-  };
+  const { user, handleLogin, handleLogout } = useAuth();
 
   const router = createBrowserRouter([
     {
@@ -34,7 +16,7 @@ const Router = () => {
       element: user ? (
         <Navigate to="/dashboard" />
       ) : (
-        <AuthForm onLogin={handleLogin} />
+        <AuthForm onLogin={handleLogin} user={user} />
       ),
     },
     {

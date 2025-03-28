@@ -3,9 +3,18 @@ import { Dropdown, Button } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Sun, Moon, Plus } from 'react-bootstrap-icons';
 import { ThemeContext } from '../theme/ThemeProvider'; 
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 
-const SideBar = ({ handleLogout, user, setShowModal }) => {
+const SideBar = ({ setShowModal }) => {
     const { theme, toggleTheme } = useContext(ThemeContext); 
+    const { handleLogout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogoutClick = async () => {
+        await handleLogout();  
+        navigate('/login'); 
+    }; 
 
     return (
         <div className="d-flex flex-md-column justify-content-between h-100 p-2 p-md-3 align-items-center">
@@ -42,7 +51,7 @@ const SideBar = ({ handleLogout, user, setShowModal }) => {
                     <Dropdown.Item href="#">Configuración</Dropdown.Item>
                     <Dropdown.Item href="#">Perfil</Dropdown.Item>
                     <Dropdown.Divider />
-                    <Button variant="light" className="w-100 text-start p-2" onClick={handleLogout} >
+                    <Button variant="light" className="w-100 text-start p-2" onClick={handleLogoutClick} >
                     Cerrar sesión
                     </Button>
                 </Dropdown.Menu>

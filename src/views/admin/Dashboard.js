@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../../db/firebase-config";
 import { agregarGasto, obtenerGastos } from "../../firestoreService";
 import { Container, Row, Col, Form, InputGroup } from "react-bootstrap";
 import MesesTabs from '../../components/MonthTabs';
 import SideBar from '../../components/SideBar';
 import AddExpenseModal from '../../components/AddExpenseModal';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
+import { Helmet } from "react-helmet";
 
 
-const Dashboard = ({ user, onLogout }) => {
+const Dashboard = () => {
+  const { user, logout } = useAuth();
   const [gastos, setGastos] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -23,14 +26,9 @@ const Dashboard = ({ user, onLogout }) => {
     setGastos(data);
   };
 
-  const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        onLogout();
-      })
-      .catch((error) => {
-        console.error("Error al cerrar sesión", error);
-      });
+  const handleLogoutClick = async () => {
+    await logout();
+    navigate('/');
   };
 
   // Manejar el guardado de un gasto
@@ -55,7 +53,7 @@ const Dashboard = ({ user, onLogout }) => {
 
     <Container fluid className="vh-100 px-0 position-relative">
       <div className="col-sidebar">
-        <SideBar handleLogout={handleLogout} user={user} setShowModal={setShowModal}/>
+        <SideBar handleLogout={handleLogoutClick} user={user} setShowModal={setShowModal}/>
       </div>
       <div className="col-content ms-auto">
         {/* Contenido principal */}
@@ -77,6 +75,10 @@ const Dashboard = ({ user, onLogout }) => {
         <div className="content-info">
           <div className="scroll-content">
             <section className="sections">
+              <Helmet>
+                <title>Sobre Nosotros | Mi App</title>
+                <meta name="description" content="Esta es la página de información sobre nosotros." />
+              </Helmet>
               <h1>Gastos</h1>
               <ul>
                 {gastos.length > 0 ? (
