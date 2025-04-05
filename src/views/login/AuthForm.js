@@ -6,15 +6,12 @@ import { useAuth } from "../../context/AuthContext";
 
 const AuthForm = () => {
   const [loading, setLoading] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const navigate = useNavigate();
   const { user, handleLogin } = useAuth();
 
   useEffect(() => {
     if (user) {
       navigate("/dashboard");
-    } else {
-      setIsLoaded(true);
     }
   }, [user, navigate]);
 
@@ -29,21 +26,9 @@ const AuthForm = () => {
       }
     } catch (error) {
       console.error(`Error al iniciar sesión con ${type}:`, error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const backgroundClasses = `position-fixed top-0 left-0 w-100 h-100 d-flex justify-content-center align-items-center`;
-  const backgroundStyle = {
-    backgroundColor: `var(--modo-oscuro)`,
-    zIndex: 9999
-  };
-
-  // Mostrar fondo de carga hasta que se verifique el estado de autenticación
-  if (!isLoaded) {
-    return <div className={backgroundClasses} style={backgroundStyle}/>;
-  }
   return (
     <Container className="mt-5">
       <Row className="justify-content-center">

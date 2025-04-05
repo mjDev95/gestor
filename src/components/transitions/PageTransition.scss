@@ -1,0 +1,11 @@
+.transition {
+  z-index: 10;
+  width: 100%;
+  li {
+    transform: scaleY(1);
+    background-color: var(--color-main);
+    width: 20%;
+    height: 100%;
+    list-style: none;
+  }
+}

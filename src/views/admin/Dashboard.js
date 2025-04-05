@@ -6,7 +6,7 @@ import SideBar from '../../components/SideBar';
 import AddExpenseModal from '../../components/AddExpenseModal';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext";
-import { Helmet } from "react-helmet";
+import TransactionList from '../../components/TransactionList';
 
 
 const Dashboard = () => {
@@ -75,11 +75,9 @@ const Dashboard = () => {
         <div className="content-info">
           <div className="scroll-content">
             <section className="sections">
-              <Helmet>
-                <title>Sobre Nosotros | Mi App</title>
-                <meta name="description" content="Esta es la página de información sobre nosotros." />
-              </Helmet>
+              <TransactionList />
               <h1>Gastos</h1>
+              
               <ul>
                 {gastos.length > 0 ? (
                   gastos.map((gasto) => (
