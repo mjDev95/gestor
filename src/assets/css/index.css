@@ -3,7 +3,14 @@
   padding: 0;
   box-sizing: border-box;
 }
+* {
+  scrollbar-width: none; /* Firefox: Oculta la barra de scroll */
+  -ms-overflow-style: none; /* IE y Edge antiguos: Oculta la barra de scroll */
+}
 
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Edge modernos: Oculta la barra de scroll */
+}
 
 
 /*--------------------------------------------------------------

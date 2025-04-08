@@ -1,6 +1,7 @@
 import { ThemeProvider } from "./theme/ThemeProvider";
 import { AuthProvider } from './context/AuthContext';
 import { GlobalProvider } from './context/GlobalState';
+import { BrowserRouter } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Router from "./router";
@@ -10,7 +11,9 @@ const App = () => {
     <ThemeProvider>
       <AuthProvider>
         <GlobalProvider>
-          <Router/>
+          <BrowserRouter>
+            <Router />
+          </BrowserRouter>
         </GlobalProvider>
       </AuthProvider>
     </ThemeProvider>
