@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion"; // Importar AnimatePresence
 import { useAuth } from "../context/AuthContext";
 import PUBLIC_ROUTE from "./routes/publicRoutes";
 import PROTECTED_ROUTE from "./routes/protectedRoutes";
@@ -10,6 +11,7 @@ import PageTransition from "../components/transitions/PageTransition";
 const Router = () => {
   const { user } = useAuth();
   const location = useLocation();
+
   // Función para obtener dinámicamente el nombre de la página
   const getPageName = (pathname) => {
     const allRoutes = [
@@ -24,38 +26,45 @@ const Router = () => {
   };
 
   return (
-    <PageTransition location={location} nextPageName={getPageName(location.pathname)} isHome={location.pathname === "/"}>
-      <Routes location={location}>
-        {/* Rutas públicas */}
-        {PUBLIC_ROUTE.map((route, index) => (
+    <AnimatePresence mode="wait">
+      <PageTransition
+        key={location.pathname} 
+        location={location}
+        nextPageName={getPageName(location.pathname)}
+        isHome={location.pathname === "/"}
+      >
+        <Routes location={location}>
+          {/* Rutas públicas */}
+          {PUBLIC_ROUTE.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              element={route.element}
+            />
+          ))}
+
+          {/* Ruta protegida */}
           <Route
-            key={index}
-            path={route.path}
-            element={route.element}
+            path={PROTECTED_ROUTE.path}
+            element={
+              user ? (
+                <ProtectedRoute>
+                  {PROTECTED_ROUTE.element}
+                </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
           />
-        ))}
 
-        {/* Ruta protegida */}
-        <Route
-          path={PROTECTED_ROUTE.path}
-          element={
-            user ? (
-              <ProtectedRoute>
-                {PROTECTED_ROUTE.element}
-              </ProtectedRoute>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        {/* Ruta de error */}
-        <Route
-          path={ERROR_ROUTE.path}
-          element={ERROR_ROUTE.element}
-        />
-      </Routes>
-    </PageTransition>
+          {/* Ruta de error */}
+          <Route
+            path={ERROR_ROUTE.path}
+            element={ERROR_ROUTE.element}
+          />
+        </Routes>
+      </PageTransition>
+    </AnimatePresence>
   );
 };
 
