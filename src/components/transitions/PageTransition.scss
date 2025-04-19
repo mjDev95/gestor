@@ -135,3 +135,53 @@
   transform-origin: top;
   z-index: 10;
 }
+
+.curve {
+  .background {
+    position: fixed;
+    height: calc(100vh);
+    width: 100vw;
+    background-color: var(--color-main);
+    z-index: 1021;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    transition: opacity 0s linear 0.1s;
+  }
+  .route {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    color: white;
+    font-size: 46px;
+    z-index: 1022;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+}
+.grid-container{
+  z-index: 1021;
+  display: grid;
+  position: fixed;
+  grid-template-columns: repeat(12,1fr);
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  place-content: center;
+  place-items: center;
+  pointer-events: none;
+  background-color: var(--color-main);
+  inset: 0%;
+  .grid-item {
+    aspect-ratio: 1;
+    background-color: var(--color-main);
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  background-color: #f0f0f0;
+}

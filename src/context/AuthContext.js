@@ -9,6 +9,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Estado de carga
   const [, setUserInfo] = useLocalStorage("userInfo", null);
 
   useEffect(() => {
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setUserInfo(null);
       }
+      setLoading(false); 
     });
 
     return () => unsubscribe();
@@ -61,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, handleLogin, handleLogout }}>
+    <AuthContext.Provider value={{ user, loading, handleLogin, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );
