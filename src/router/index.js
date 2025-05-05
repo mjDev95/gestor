@@ -18,6 +18,7 @@ const Router = () => {
         key={location.pathname}
         location={location}
         isHome={location.pathname === "/"}
+        readyToAnimate={!loading}
       >
         <Routes location={location}>
           {/* Rutas públicas */}
@@ -33,9 +34,7 @@ const Router = () => {
           <Route
             path={PROTECTED_ROUTE.path}
             element={
-              loading ? (
-                <div>Cargando...</div>
-              ) : user ? (
+              loading ? null : user ? (
                 <ProtectedRoute>
                   {PROTECTED_ROUTE.element}
                 </ProtectedRoute>

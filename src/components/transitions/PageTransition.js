@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "./PageTransition.scss";
 
-const PageTransition = ({ children }) => {
+const PageTransition = ({ children, readyToAnimate }) => {
   const [gridItems, setGridItems] = useState([]);
   const [gridStyle, setGridStyle] = useState({});
   const [, setMaxDelay] = useState(0);
@@ -27,14 +27,18 @@ const PageTransition = ({ children }) => {
             key={i}
             className="grid-item"
             initial={{ opacity: 1 }}
-            animate={{
-              opacity: 0,
-              transition: {
-                delay: randomDelay,
-                duration: 0.9,
-                ease: [0.76, 0, 0.24, 1],
-              },
-            }}
+            animate={
+              readyToAnimate
+                ? {
+                    opacity: 0,
+                    transition: {
+                      delay: randomDelay,
+                      duration: 0.9,
+                      ease: [0.76, 0, 0.24, 1],
+                    },
+                  }
+                : {}
+            }
             exit={{
               opacity: startOpacity,
               transition: {
@@ -60,7 +64,8 @@ const PageTransition = ({ children }) => {
     createGrid();
     window.addEventListener("resize", createGrid);
     return () => window.removeEventListener("resize", createGrid);
-  }, []);
+  }, [readyToAnimate]);
+
 
   return (
     <>

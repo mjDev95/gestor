@@ -1,16 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './assets/css/index.css';
+import './assets/styles/index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css'; 
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { PerfilProvider } from './context/PerfilContext';
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <PerfilProvider>
+      <App />
+    </PerfilProvider>
   </React.StrictMode>
 );
 

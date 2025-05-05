@@ -1,3 +1,6 @@
+@import './variables';
+@import "~bootstrap/scss/bootstrap";
+
 * {
   margin: 0;
   padding: 0;
@@ -19,17 +22,17 @@ VARIABLES CSS
 
 :root {
   /*========== Colores ==========*/
-  --modo-claro:#E1E1E1;
-  --modo-oscuro: #eeeeee;
+  --modo-claro:#f6f9fb;
+  --modo-oscuro: #ffffff;
   --color-gray: #f8f8f9;
   --color-main: #CFF80B;
   --color-second: #FF2257;
-  --texto-principal: #292929;
-  --texto-secundario: #717275;
+  --texto-principal: #293951;
+  --texto-secundario: #95aac9;
 
   /*========== Font and typography ==========*/
-  --font-content: 'Poppins', sans-serif;
-  --font-titles: 'Mario', sans-serif;
+  --font-content: 'main', sans-serif;
+  --font-titles: 'bolds', sans-serif;
   --font-size-default: 1.1rem;
   --font-size-h1: 6vw;
   --font-size-h1-md: 9vw;
@@ -46,8 +49,8 @@ VARIABLES CSS
 }
 
 html.dark {
-  --modo-claro:#1E1E1E;
-  --modo-oscuro: #111111;
+  --modo-claro:#1a1d21;
+  --modo-oscuro: #16191c;
   --color-main: #FFFF99;
   --color-second: #FF99A1;
   --texto-principal: #ffffff;
@@ -57,16 +60,15 @@ html.dark {
 /*--------------------------------------------------------------
 FONT FACE
 --------------------------------------------------------------*/
-/*
 @font-face {
-  font-family: 'Poppins';
-  src: local('Poppins'), url(./fonts/DMSans-Regular.ttf) format('truetype');
+  font-family: 'main';
+  src: local('main'), url(../fonts/Aileron-Regular.otf) format('opentype');
 }
 
 @font-face {
-  font-family: 'Mario';
-  src: local('Mario'), url(./fonts/ClashDisplay-Regular.ttf) format('truetype');
-}*/
+  font-family: 'bolds';
+  src: local('bolds'), url(../fonts/Antonio-VariableFont_wght.ttf) format('truetype');
+}
 
 /*--------------------------------------------------------------
 GENERAL STYLES
@@ -76,16 +78,24 @@ GENERAL STYLES
 body {
   background-color: var(--modo-oscuro) !important;
   color: var(--texto-secundario) !important;
-  font-family: var(--font-content) !important;
   font-size: var(--font-size-default) !important;
   transition: background-color 0.5s cubic-bezier(0.25, 0.1, 0.4, -0.12), color 0.5s cubic-bezier(0, 0, 0.05, -0.57);
 }
 
+h1, h2, h3 {
+  /*text-transform: uppercase;*/
+  font-weight: 700;
+  font-family: var(--font-titles) !important;
+}
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  color: var(--texto-principal) !important;
+}
+
+body, p, li {
+  font-family: var(--font-content) !important;
+}
 
 /*meses*/
-.file-tabs{
-  background-color: var(--modo-oscuro);
-}
 .swiper-container {
   width: 100%; 
 }
@@ -152,26 +162,117 @@ body {
   opacity: 1
 }
 
-
-
-.sections {
-  padding: 100px 20px;
+/*--------------------------------------------------------------
+SIDEBAR
+--------------------------------------------------------------*/
+.transactions-list {
+  background-color: var(--modo-oscuro);
 }
+/*--------------------------------------------------------------
+Lateral
+--------------------------------------------------------------*/
+.app-lateral {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  background: var(--color-main);
+  z-index: 100;
+  transform: translate(calc(100% + 6vw), 0) rotate(0.001deg);
+  transition: transform .8s cubic-bezier(.7, 0, .2, 1);
+  will-change: transform;
+}
+.fixed-nav-rounded-div {
+  position: absolute;
+  left: 1px;
+  transform: translateX(-100%);
+  height: 100%;
+  top: 0;
+}
+.fixed-nav-rounded-div .content-rounded {
+  width: 6vw;
+  height: 100%;
+  transition: all .85s cubic-bezier(.7, 0, .2, 1);
+  will-change: width;
+}
+
+.content-rounded {
+  width: 100%;
+  top: 0;
+  position: relative;
+  height: 10vh;
+  overflow: hidden;
+}
+
+.fixed-nav-rounded-div .content-rounded .div-rounded{
+  background: var(--color-main);
+  height: 150%;
+  content: "";
+  display: block;
+  position: absolute;
+  width: 775%;
+  top: 50%;
+  border-radius: 50%;
+  transform: translate(-6.5%, -50%);
+}
+
+.div-rounded {
+  width: 150%;
+  content: "";
+  display: block;
+  position: absolute;
+  background: var(--color-white);
+  height: 750%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -86.666%);
+  z-index: 1;
+}
+.app-lateral.active {
+  transform: translate(0, 0) rotate(0.001deg);
+}
+
+.app-lateral.active .content-rounded{
+  width: 0vw;
+}
+
+.info-fixed{
+  height: 100%;
+  position: relative;
+  transform: translate(0, 0) rotate(0.001deg);
+  transition: all .6s cubic-bezier(.7, 0, .2, 1);
+  will-change: transform;
+}
+.btn_contacto {
+  height: 50px;
+  width: 50px;
+  background: #fff;
+  text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-left: auto;
+  font-size: 40px;
+  font-weight: 600;
+}
+.app{
+  transform: translate(0, 0) rotate(0.001deg);
+  transition: transform .9s cubic-bezier(.7, 0, .2, 1);
+}
+
+.app.active {
+  transform: translate(calc(-20% + 6vw), 0) rotate(0deg);
+  transition: transform .9s cubic-bezier(.7, 0, .2, 1);
+}
+
 /*--------------------------------------------------------------
 SIDEBAR
 --------------------------------------------------------------*/
 .col-sidebar {
-  position: fixed;
-  background-color: var(--modo-oscuro);
-  bottom: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
+  position: relative;
   z-index: 1020;
 }
-.col-content{
-  width: 100%;
-}
+
 .btn.btn-sidebar {
   height: 60px;
   width: 60px;
@@ -183,12 +284,30 @@ SIDEBAR
 .btn.btn-sidebar.dropdown-toggle::after {
   content: none !important; 
 }
+.content-info{
+  background-color: var(--modo-claro);
+}
+@media (max-width: 576px) {
+  /*--------------------------------------------------------------
+  SIDEBAR
+  --------------------------------------------------------------*/
+  .app-lateral {
+    width: 100%;
+    transform: translate(calc(100% + 20vw), 0) rotate(0.001deg);
+  }
+
+  .fixed-nav-rounded-div {
+    .content-rounded {
+      width: 20vw;
+    }
+  }
+}
 
 @media (min-width: 576px) {
   /*--------------------------------------------------------------
   SIDEBAR
   --------------------------------------------------------------*/
-  .col-sidebar {
+  /*.col-sidebar {
     top: 0;
     right: auto;
     left: 0;
@@ -196,7 +315,7 @@ SIDEBAR
   }
   .col-content{
     max-width: calc(100% - 92px);
-  }
+  }*/
 }
 
 @media (min-width: 768px) {
@@ -204,9 +323,9 @@ SIDEBAR
 }
 
 @media (min-width: 992px) {
-  #slide-meses {
+  /*#slide-meses {
     width: 600px;
-  }
+  }*/
 }
 
 @media (min-width: 1200px) {

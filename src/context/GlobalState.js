@@ -12,21 +12,26 @@ const initialState = {
   error: null,
 };
 
-const obtenerGastos = async (userId) => {
+const obtenerTransacciones = async (userId) => {
   try {
-    const q = query(collection(db, "gastos"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
+    const colecciones = ['gastos', 'ingresos'];
+    const todas = [];
 
-    const gastos = [];
-    querySnapshot.forEach((doc) => {
-        gastos.push({ id: doc.id, ...doc.data() });
-    });
-    return gastos;
+    for (const col of colecciones) {
+      const q = query(collection(db, col), where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        todas.push({ id: doc.id, ...doc.data(), tipo: col }); // Añadir 'tipo' para identificar
+      });
+    }
+
+    return todas;
   } catch (error) {
-    console.error('Error al obtener los gastos:', error);
+    console.error('Error al obtener transacciones:', error);
     return [];
   }
 };
+
 
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(transactionReducer, initialState);
@@ -34,32 +39,51 @@ export const GlobalProvider = ({ children }) => {
 
   // Función para cargar las transacciones desde Firebase
   useEffect(() => {
-    const fetchGastos = async () => {
+    const fetchTransacciones = async () => {
       if (!user) return;
-
-      dispatch({ type: 'SET_LOADING' }); // Activar el loading
-
-      const gastos = await obtenerGastos(user.uid);
-      dispatch({ type: 'SET_TRANSACTIONS', payload: gastos });
+  
+      dispatch({ type: 'SET_LOADING' });
+      const transacciones = await obtenerTransacciones(user.uid);
+      dispatch({ type: 'SET_TRANSACTIONS', payload: transacciones });
     };
-
-    fetchGastos();
-  }, [user]); 
+  
+    fetchTransacciones();
+  }, [user]);
 
   // Función para agregar una transacción
-  const addTransaction = (transaction) => {
-    dispatch({
-      type: 'ADD_TRANSACTION',
-      payload: transaction,
-    });
+  const addTransaction = async (transaction, tipo) => {
+    try {
+      if (!transaction.fecha) {
+        alert('La fecha es obligatoria y no puede estar vacía.'); // Mostrar alerta
+        return; // Detener la ejecución si falta la fecha
+      }
+      console.log('Fecha enviada a Firebase:', transaction.fecha); // Depuración
+      const nuevaRef = await addDoc(collection(db, tipo), {
+        ...transaction,
+        fecha: transaction.fecha,
+        userId: user.uid,
+      });
+  
+      dispatch({
+        type: 'ADD_TRANSACTION',
+        payload: { id: nuevaRef.id, ...transaction, tipo, userId: user.uid },
+      });
+    } catch (error) {
+      console.error('Error al agregar transacción:', error);
+    }
   };
 
   // Función para eliminar una transacción
-  const deleteTransaction = (id) => {
-    dispatch({
-      type: 'DELETE_TRANSACTION',
-      payload: id,
-    });
+  const deleteTransaction = async (id, tipo) => {
+    try {
+      await deleteDoc(doc(db, tipo, id));
+      dispatch({
+        type: 'DELETE_TRANSACTION',
+        payload: id,
+      });
+    } catch (error) {
+      console.error('Error al eliminar transacción:', error);
+    }
   };
 
   return (

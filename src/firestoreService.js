@@ -59,22 +59,3 @@ export const agregarGasto = async (uid, expenseData) => {
         console.error('Error al agregar el gasto:', e);
     }
 };
-
-/**
- * Obtener los gastos del usuario
- */
-export const obtenerGastos = async (userId) => {
-    try {
-        const q = query(collection(db, "gastos"), where("userId", "==", userId));
-        const querySnapshot = await getDocs(q);
-
-        const gastos = [];
-        querySnapshot.forEach((doc) => {
-            gastos.push({ id: doc.id, ...doc.data() });
-        });
-        return gastos;
-    } catch (error) {
-        console.error("Error al obtener los gastos:", error);
-        return [];
-    }
-};

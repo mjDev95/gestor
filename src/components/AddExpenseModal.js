@@ -65,6 +65,7 @@ const AddExpenseModal = ({ showModal, handleClose, user, handleSaveExpense }) =>
         
         // Limpiamos el formulario
         setFormData({
+            tipo: "gasto",
             cantidad: "",
             categoria: "",
             fecha: "",
