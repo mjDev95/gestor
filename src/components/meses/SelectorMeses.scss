@@ -1,0 +1,10 @@
+.btn-month{
+    background-color: var(--modo-oscuro);
+    color:  var(--texto-principal) !important;
+    border: 1px solid var(--modo-claro) !important;
+    &.active{
+        background-color: var(--color-main) !important;
+        color: var(--modo-claro) !important;
+        border: 1px solid var(--modo-main) !important;
+    }
+}

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Button, Container, Row, Col, Spinner } from "react-bootstrap";  
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -30,36 +29,39 @@ const AuthForm = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Row className="justify-content-center">
-        <Col md={6} sm={12}>
+    <div className="mt-5 container">
+      <div className="row justify-content-center">
+        <div className="col-md-6 col-sm-12">
           <h2 className="text-center mb-4">Login</h2>
           <div className="text-center mt-4">
-            <Button
-              variant="outline-danger"
+            <button
+              className="btn btn-outline-danger mb-3"
               onClick={() => handleLoginClick("google")}
               disabled={loading || user}
-              className="mb-3"
             >
               {loading ? (
-                <Spinner animation="border" size="sm" />
+                <span
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
               ) : (
                 "Iniciar sesión con Google"
               )}
-            </Button>
+            </button>
             <div>
-              <Button
-                variant="outline-primary"
+              <button
+                className="btn btn-outline-primary"
                 onClick={() => handleLoginClick("guest")}
-                disabled={loading || user} 
+                disabled={loading || user}
               >
                 Entrar como Invitado
-              </Button>
+              </button>
             </div>
           </div>
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

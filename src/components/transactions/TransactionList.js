@@ -1,11 +1,13 @@
 import React from 'react';
-import { useGlobalState } from '../context/GlobalState';
-import { formatearFecha } from '../utils/formatDate';
-import { formatearDinero } from '../utils/formatMoney';
-
+import { useGlobalState } from '../../context/GlobalState';
+import { useMonth } from '../../context/monthContext'; 
+import { formatearFecha } from '../../utils/formatDate';
+import { formatearDinero } from '../../utils/formatMoney';
+import  './TransactionList.scss'; 
 
 const TransactionList = () => {
   const { transactions, loading, error, deleteTransaction } = useGlobalState();
+  const { mesSeleccionado } = useMonth(); // Obtener el mes actual
 
   if (loading) {
     return <p>Cargando transacciones...</p>;
@@ -15,18 +17,23 @@ const TransactionList = () => {
     return <p>Error al cargar las transacciones: {error}</p>;
   }
 
+  // Filtrar las transacciones por el mes actual
+  const transaccionesMesActual = transactions.actual.filter((transaction) => {
+    return transaction.fecha.startsWith(mesSeleccionado); // Verificar si la fecha comienza con el mes seleccionado
+  });
+
   return (
-    <div>
+    <div className="transactions-list rounded p-4">
       <h2 className="text-start mb-4">Transacciones recientes</h2>
-      <ul className="transactions-list rounded-4 p-4">
-        {transactions.length === 0 ? (
+      <ul className="">
+        {transaccionesMesActual.length === 0 ? (
           <li className="transaction-item py-2 border-0 list-group-item">
-            <p>No tienes transacciones registradas.</p>
+            <p>No tienes transacciones registradas para este mes.</p>
           </li>
         ) : (
           <>
-            {transactions
-              .slice(-5)  
+            {transaccionesMesActual
+              .slice(-10)  
               .reverse() 
               .map((transaction) => (
                 <li key={transaction.id} className="transaction-item py-2 border-0 list-group-item">

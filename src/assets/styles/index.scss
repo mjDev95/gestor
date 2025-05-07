@@ -1,4 +1,5 @@
-@import './variables';
+@import "./variables";
+@import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/bootstrap";
 
 * {
@@ -29,22 +30,15 @@ VARIABLES CSS
   --color-second: #FF2257;
   --texto-principal: #293951;
   --texto-secundario: #95aac9;
-
   /*========== Font and typography ==========*/
   --font-content: 'main', sans-serif;
   --font-titles: 'bolds', sans-serif;
+  --font-light: 'light', sans-serif;
   --font-size-default: 1.1rem;
   --font-size-h1: 6vw;
   --font-size-h1-md: 9vw;
   --font-size-h1-sm: 12vw;
-
-  /*Animaciones*/
-  /*Transición*/
-
-  /*Sombras*/
-  --general--shadow-01: rgba(6, 6, 6, .1);
-  --general--shadow-02: rgba(6, 6, 6, .12);
-  --general--shadow-03: rgba(20, 20, 43, .24);
+  --bs-border-radius: 1.5625rem !important;
 
 }
 
@@ -64,7 +58,10 @@ FONT FACE
   font-family: 'main';
   src: local('main'), url(../fonts/Aileron-Regular.otf) format('opentype');
 }
-
+@font-face {
+  font-family: 'light';
+  src: local('main'), url(../fonts/Aileron-Thin.otf) format('opentype');
+}
 @font-face {
   font-family: 'bolds';
   src: local('bolds'), url(../fonts/Antonio-VariableFont_wght.ttf) format('truetype');
@@ -76,13 +73,13 @@ GENERAL STYLES
 
 
 body {
-  background-color: var(--modo-oscuro) !important;
+  background-color: var(--modo-claro) !important;
   color: var(--texto-secundario) !important;
   font-size: var(--font-size-default) !important;
   transition: background-color 0.5s cubic-bezier(0.25, 0.1, 0.4, -0.12), color 0.5s cubic-bezier(0, 0, 0.05, -0.57);
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
   /*text-transform: uppercase;*/
   font-weight: 700;
   font-family: var(--font-titles) !important;
@@ -94,27 +91,25 @@ h1, h2, h3 {
 body, p, li {
   font-family: var(--font-content) !important;
 }
-
-/*meses*/
-.swiper-container {
-  width: 100%; 
+.fw-light{
+  font-family: var(--font-light) !important;
 }
-
-.custom-slide {
-  width: auto !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.btn.swiper-button {
-  padding: 8px 26px;
-  font-size: 14px;
-  text-align: center;
-  white-space: nowrap; 
-  background-color: var(--modo-claro);
-  color: var(--texto-principal);
-}
+/*.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--color-main) !important;
+  --bs-btn-border-color: var(--color-main) !important;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #0b5ed7;
+  --bs-btn-hover-border-color: #0a58ca;
+  --bs-btn-focus-shadow-rgb: 49,132,253;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #0a58ca;
+  --bs-btn-active-border-color: #0a53be;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--color-main) !important;
+  --bs-btn-disabled-border-color: var(--color-main) !important;
+}*/
 
 .search.form-control{
   background-color: var(--modo-claro);
@@ -271,6 +266,7 @@ SIDEBAR
 .col-sidebar {
   position: relative;
   z-index: 1020;
+  background-color: var(--modo-oscuro);
 }
 
 .btn.btn-sidebar {
@@ -284,9 +280,7 @@ SIDEBAR
 .btn.btn-sidebar.dropdown-toggle::after {
   content: none !important; 
 }
-.content-info{
-  background-color: var(--modo-claro);
-}
+
 @media (max-width: 576px) {
   /*--------------------------------------------------------------
   SIDEBAR

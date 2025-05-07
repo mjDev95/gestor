@@ -3,52 +3,75 @@ import transactionReducer from './transactionReducer';
 import { db } from '../db/firebase-config';
 import { collection, getDocs, addDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
+import { useMonth } from './monthContext'; 
+import { getMesAnterior } from '../utils/formatDate';
 
 const GlobalContext = createContext();
 
 const initialState = {
-  transactions: [], 
+  transactions: { actual: [], previo: [] },
   loading: true,
   error: null,
+  mesAnterior: null,
 };
 
-const obtenerTransacciones = async (userId) => {
+const obtenerTransaccionesMes = async (userId, mes) => {
   try {
     const colecciones = ['gastos', 'ingresos'];
     const todas = [];
 
     for (const col of colecciones) {
-      const q = query(collection(db, col), where("userId", "==", userId));
+      const q = query(
+        collection(db, col),
+        where("userId", "==", userId),
+        where("fecha", ">=", `${mes}-01`),
+        where("fecha", "<=", `${mes}-31`)
+      );
+
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
-        todas.push({ id: doc.id, ...doc.data(), tipo: col }); // Añadir 'tipo' para identificar
+        todas.push({ id: doc.id, ...doc.data(), tipo: col });
       });
     }
 
     return todas;
   } catch (error) {
-    console.error('Error al obtener transacciones:', error);
+    console.error("Error al obtener transacciones:", error);
     return [];
   }
 };
 
 
+
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(transactionReducer, initialState);
   const { user } = useAuth();
+  const { mesSeleccionado } = useMonth();
 
   // Función para cargar las transacciones desde Firebase
   useEffect(() => {
     const fetchTransacciones = async () => {
       if (!user) return;
   
-      dispatch({ type: 'SET_LOADING' });
-      const transacciones = await obtenerTransacciones(user.uid);
-      dispatch({ type: 'SET_TRANSACTIONS', payload: transacciones });
+      dispatch({ type: "SET_LOADING" });
+  
+      // ✅ Obtenemos los dos meses
+      const mesAnterior = getMesAnterior(mesSeleccionado);
+  
+      // ✅ Llamamos la función dos veces con diferentes meses
+      const transaccionesActual = await obtenerTransaccionesMes(user.uid, mesSeleccionado);
+      const transaccionesPrevias = await obtenerTransaccionesMes(user.uid, mesAnterior);
+  
+      dispatch({
+        type: "SET_TRANSACTIONS",
+        payload: { actual: transaccionesActual, previo: transaccionesPrevias },
+      });
+  
+      dispatch({ type: "SET_MES_ANTERIOR", payload: mesAnterior });
     };
   
     fetchTransacciones();
-  }, [user]);
+  }, [user, mesSeleccionado]);
 
   // Función para agregar una transacción
   const addTransaction = async (transaction, tipo) => {
@@ -92,6 +115,7 @@ export const GlobalProvider = ({ children }) => {
         transactions: state.transactions,
         loading: state.loading,
         error: state.error,
+        mesAnterior: state.mesAnterior,
         addTransaction,
         deleteTransaction,
       }}

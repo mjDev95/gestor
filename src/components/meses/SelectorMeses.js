@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Button } from 'react-bootstrap';
+import React, { useEffect, useMemo } from 'react';
+import { useMonth } from '../../context/monthContext';
 import { useMeses } from '../../hooks/useMeses';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { formatearMes } from '../../utils/formatDate';
 import 'swiper/css';
 import './SelectorMeses.scss';
 
-const SelectorMeses = ({ onSelect }) => {
+
+
+const SelectorMeses = () => {
   const { meses, cargando } = useMeses();
-  const [seleccionado, setSeleccionado] = useState(null);
+  const { mesSeleccionado, cambiarMes } = useMonth(); // Accedemos al mes y a la función cambiarMes desde el contexto
 
   const mesActualStr = new Date().toISOString().slice(0, 7);
 
@@ -17,52 +20,56 @@ const SelectorMeses = ({ onSelect }) => {
 
   const inicialIndex = useMemo(() => {
     return mesesOrdenados.findIndex(
-      (mes) => mes === mesActualStr
+      (mes) => mes === mesSeleccionado || mes === mesActualStr
     );
-  }, [mesesOrdenados, mesActualStr]);
+  }, [mesesOrdenados, mesSeleccionado, mesActualStr]);
 
   useEffect(() => {
-    if (mesesOrdenados.includes(mesActualStr)) {
-      setSeleccionado(mesActualStr);
-      onSelect(mesActualStr);
+    if (!mesSeleccionado && mesesOrdenados.includes(mesActualStr)) {
+      cambiarMes(mesActualStr); // Actualizamos el mes en el contexto
     }
-  }, [mesesOrdenados]);
+  }, [mesSeleccionado, mesesOrdenados, mesActualStr, cambiarMes]);
 
   const manejarClick = (mes) => {
-    setSeleccionado(mes);
-    onSelect(mes);
+    cambiarMes(mes); 
   };
 
   if (cargando) return null;
 
   return (
-    <div className="selector-meses position-relative" style={{ zIndex: '1000' }}>
+    <div className="selector-meses position-relative px-1" style={{ zIndex: '1000' }}>
       <Swiper
-        spaceBetween={16}
-        slidesPerView="auto"
+        spaceBetween={8}
+        slidesPerView="3"
         initialSlide={inicialIndex}
         grabCursor={true}
         className="swiper-meses"
+        breakpoints={{
+          576: {
+            slidesPerView: 3, // Tablet pequeña
+          },
+          768: {
+            slidesPerView: 4, // Tablet
+          },
+          992: {
+            slidesPerView: 5, // Desktop
+          },
+          1200: {
+            slidesPerView: 6, // Pantallas más grandes
+          },
+        }}
       >
         {mesesOrdenados.map((mesStr) => {
-          const [anio, mes] = mesStr.split('-'); 
-          const fecha = new Date(anio, mes - 1, 1); 
-          const nombreMes = fecha.toLocaleString('default', { month: 'short' }).toUpperCase(); 
-          const anioAbreviado = fecha.getFullYear().toString().slice(-2); 
-
-          // Mostrar "MES XX", donde XX son los últimos 2 dígitos del año
-          const textoMes = `${nombreMes} ${anioAbreviado}`;
+          const textoMes = formatearMes(mesStr);
 
           return (
             <SwiperSlide key={mesStr} style={{ width: 'auto' }} className='py-3'>
-              <Button
-                variant={seleccionado === mesStr ? 'primary' : 'light'}
-                size="sm"
-                className="rounded-pill px-4 text-uppercase w-100"
+              <button
+                className={`btn-month rounded-pill text-uppercase w-100 btn ${mesSeleccionado === mesStr ? 'active' : ''}`}
                 onClick={() => manejarClick(mesStr)}
               >
                 {textoMes}
-              </Button>
+              </button>
             </SwiperSlide>
           );
         })}

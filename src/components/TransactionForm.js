@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Alert } from 'react-bootstrap';
 
 const TransactionForm = ({ showModal, handleClose, handleSaveExpense }) => {
   const [tipo, setTipo] = useState('gastos');
@@ -14,7 +13,7 @@ const TransactionForm = ({ showModal, handleClose, handleSaveExpense }) => {
     e.preventDefault();
 
     if (!nombre || !fecha || !monto || isNaN(monto) || !categoria || (tipo === 'gastos' && !formaPago)) {
-      setError('Por favor, completa todos los campos correctamente formulario. ');
+      setError('Por favor, completa todos los campos correctamente. ');
       return;
     }
 
@@ -42,79 +41,65 @@ const TransactionForm = ({ showModal, handleClose, handleSaveExpense }) => {
   };
 
   return (
-    <Modal show={showModal} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Agregar {tipo === 'gastos' ? 'Gasto' : tipo === 'ingresos' ? 'Ingreso' : 'Ahorro'}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Tipo</Form.Label>
-            <Form.Select value={tipo} onChange={(e) => setTipo(e.target.value)}>
-              <option value="gastos">Gasto</option>
-              <option value="ingresos">Ingreso</option>
-              <option value="ahorro">Ahorro</option>
-            </Form.Select>
-          </Form.Group>
+    <div className={`modal fade ${showModal ? 'show d-block' : ''}`} tabIndex="-1">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Agregar {tipo === 'gastos' ? 'Gasto' : tipo === 'ingresos' ? 'Ingreso' : 'Ahorro'}</h5>
+            <button type="button" className="btn-close" onClick={handleClose}></button>
+          </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Nombre</Form.Label>  {/* Cambiado a Nombre */}
-            <Form.Control
-              type="text"
-              placeholder="Ej: Supermercado"
-              value={nombre}  // Cambiado de descripcion a nombre
-              onChange={(e) => setNombre(e.target.value)}
-            />
-          </Form.Group>
+          <div className="modal-body">
+            {error && <div className="alert alert-danger">{error}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Tipo</label>
+                <select className="form-select" value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                  <option value="gastos">Gasto</option>
+                  <option value="ingresos">Ingreso</option>
+                  <option value="ahorro">Ahorro</option>
+                </select>
+              </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Monto</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Ej: 200"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
-            />
-          </Form.Group>
+              <div className="mb-3">
+                <label className="form-label">Nombre</label>
+                <input type="text" className="form-control" placeholder="Ej: Supermercado" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+              </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Fecha</Form.Label>
-            <Form.Control
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-            />
-          </Form.Group>
+              <div className="mb-3">
+                <label className="form-label">Monto</label>
+                <input type="number" className="form-control" placeholder="Ej: 200" value={monto} onChange={(e) => setMonto(e.target.value)} />
+              </div>
 
-          {tipo === 'gastos' && (
-            <Form.Group className="mb-3">
-              <Form.Label>Forma de pago</Form.Label>
-              <Form.Select value={formaPago} onChange={(e) => setFormaPago(e.target.value)}>
-                <option value="">Selecciona una opción</option>
-                <option value="efectivo">Efectivo</option>
-                <option value="tarjeta">Tarjeta</option>
-                <option value="transferencia">Transferencia</option>
-              </Form.Select>
-            </Form.Group>
-          )}
+              <div className="mb-3">
+                <label className="form-label">Fecha</label>
+                <input type="date" className="form-control" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+              </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Categoría</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ej: comida, transporte, sueldo"
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value)}
-            />
-          </Form.Group>
+              {tipo === 'gastos' && (
+                <div className="mb-3">
+                  <label className="form-label">Forma de pago</label>
+                  <select className="form-select" value={formaPago} onChange={(e) => setFormaPago(e.target.value)}>
+                    <option value="">Selecciona una opción</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="tarjeta">Tarjeta</option>
+                    <option value="transferencia">Transferencia</option>
+                  </select>
+                </div>
+              )}
 
-          <Button variant="primary" type="submit">
-            Guardar
-          </Button>
-        </Form>
-      </Modal.Body>
-    </Modal>
+              <div className="mb-3">
+                <label className="form-label">Categoría</label>
+                <input type="text" className="form-control" placeholder="Ej: comida, transporte, sueldo" value={categoria} onChange={(e) => setCategoria(e.target.value)} />
+              </div>
+
+              <button type="submit" className="btn btn-primary">Guardar</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -12,6 +12,11 @@ const transactionReducer = (state, action) => {
         transactions: action.payload,
         loading: false,
       };
+    case "SET_MES_ANTERIOR":
+      return {
+        ...state,
+        mesAnterior: action.payload,
+      };
     case 'SET_TARJETAS':
       return {
         ...state,
