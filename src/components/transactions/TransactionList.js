@@ -33,7 +33,7 @@ const TransactionList = () => {
         ) : (
           <>
             {transaccionesMesActual
-              .slice(-10)  
+              .slice(-5)  
               .reverse() 
               .map((transaction) => (
                 <li key={transaction.id} className="transaction-item py-2 border-0 list-group-item">

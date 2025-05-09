@@ -67,7 +67,7 @@ const ResumenFinanciero = () => {
   ];
 
   return (
-    <div className="row resumen-financiero">
+    <div className="row resumen-financiero justify-content-between align-items-stretch">
       {resumen.map((item, index) => {
         const { Icon, valor, previo } = item;
         const variacion = calcularVariacion(valor, previo);
@@ -75,33 +75,33 @@ const ResumenFinanciero = () => {
         const colorClase = aumento ? "text-success" : "text-danger";
 
         return (
-          <div key={index} className="col-lg-3 col-md-6 col-sm-12 mb-4">
-            <div className={`p-4 rounded border-0 resumen-card ${item.clase}`}>
-              <div className="d-flex align-items-center gap-3">
+          <div key={index} className="col-xxl-3 col-sm-6 mb-4">
+            <div className={`d-flex flex-column justify-content-between p-4 rounded border-0 h-100 resumen-card ${item.clase}`}>
+              <div className="d-flex flex-row align-items-center gap-2">
                 <div className="icon-stage d-flex justify-content-center align-items-center rounded-3">
                   <Icon size={16} className="text-primary" />
                 </div>
-                <div>
-                  <h5 className="card-title fw-light h6 mb-1">{item.titulo}</h5>
-                  <div className="d-flex d-lg-block align-items-center gap-2">
-                    <p className="card-text resumen-valor h6 mb-0 ">
-                      ${formatAmount(item.valor)}
-                    </p>
-                    <p className="d-none card-text resumen-valor h6 mb-0 ">
-                      {getNombreMes(mesAnterior)}: ${formatAmount(item.previo)}
-                    </p>
+                <div className="w-100 d-flex justify-content-between align-items-center my-2">
+                  <div>
+                    <h5 className="card-title fw-light h6 mb-1">{item.titulo}</h5>
+                      <p className="card-text resumen-valor h4 mb-0 ">
+                        ${formatAmount(item.valor)}
+                      </p>
+                      <p className="d-none card-text resumen-valor h6 mb-0 ">
+                        {getNombreMes(mesAnterior)}: ${formatAmount(item.previo)}
+                      </p>
+                  </div>
+                  <div className="ms-auto mt-auto me-0">
+                    {item.titulo !== "Saldo disponible" && (
+                      <small className={`badge-resumen rounded-3 px-2 fw-normal d-flex align-items-center gap-1 ${colorClase}`}>
+                        {variacion === 0 ? "0%" : `${variacion > 0 ? "+" : ""}${variacion}%`}
+                      </small>
+                    )}
                   </div>
                 </div>
-                <div className="ms-auto mt-auto me-0">
-                  {item.titulo !== "Saldo disponible" && (
-                    <small className={`badge-resumen rounded-3 px-2 fw-normal d-flex align-items-center gap-1 ${colorClase}`}>
-                      {variacion === 0 ? "0%" : `${variacion > 0 ? "+" : ""}${variacion}%`}
-                    </small>
-                  )}
-                </div>
               </div>
-              <div className="alerta-resumen mt-3">
-                <small className="fw-light">
+              <div className="alerta-resumen mt-1">
+                <small className="fw-light lh-1">
                   {item.valor === item.previo ? (
                     "Igual que el mes anterior"
                   ) : item.valor > item.previo ? (

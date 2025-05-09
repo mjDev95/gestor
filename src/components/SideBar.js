@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Sun, Moon, Plus, GearFill } from 'react-bootstrap-icons';
+import { Sun, Moon, Plus, GearFill, GridFill, CreditCardFill, ArrowDownUp } from 'react-bootstrap-icons';
 import { ThemeContext } from '../theme/ThemeProvider'; 
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +32,26 @@ const SideBar = ({ setShowModal }) => {
                 <li>
                     <button className="btn btn-sidebar m-2 m-lg-3" onClick={handleLogoutClick}>
                         <GearFill color="green" size={20} />
+                    </button>
+                </li>
+                <li>
+                    <button className="btn btn-sidebar m-2 m-lg-3">
+                        <GridFill color="blue" size={20} />
+                    </button>
+                </li>
+                <li>
+                    <button className="btn btn-sidebar m-2 m-lg-3">
+                        <CreditCardFill color="purple" size={20} />
+                    </button>
+                </li>
+                <li>
+                    <button className="btn btn-sidebar m-2 m-lg-3">
+                        <ArrowDownUp color="green" size={20} />
+                    </button>
+                </li>
+                <li>
+                    <button className="btn btn-sidebar m-2 m-lg-3">
+                        <GearFill color="gray" size={20} />
                     </button>
                 </li>
                 <li>

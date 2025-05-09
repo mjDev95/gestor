@@ -49,7 +49,7 @@ const SelectorMeses = () => {
             slidesPerView: 3, // Tablet pequeña
           },
           768: {
-            slidesPerView: 4, // Tablet
+            slidesPerView: 3, // Tablet
           },
           992: {
             slidesPerView: 5, // Desktop

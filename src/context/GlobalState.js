@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext, useEffect } from 'react';
+import React, { createContext, useReducer, useContext, useEffect, useState } from 'react';
 import transactionReducer from './transactionReducer';
 import { db } from '../db/firebase-config';
 import { collection, getDocs, addDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
@@ -14,7 +14,37 @@ const initialState = {
   error: null,
   mesAnterior: null,
 };
+// Función para obtener el presupuesto desde Firebase
+const obtenerPresupuesto = async (mesSeleccionado) => {
+  try {
+    // Construir el rango de fechas para el mes seleccionado
+    const inicioMes = `${mesSeleccionado}-01`; // Ejemplo: "2024-07-01"
+    const finMes = `${mesSeleccionado}-31`; // Ejemplo: "2024-07-31"
 
+    const presupuestoQuery = query(
+      collection(db, "presupuestos"),
+      where("fecha", ">=", inicioMes), // Inicio del mes
+      where("fecha", "<=", finMes) // Fin del mes
+    );
+
+    const presupuestoSnapshot = await getDocs(presupuestoQuery);
+
+    console.log("Consulta presupuesto:", presupuestoSnapshot.docs); // Depuración
+
+    if (!presupuestoSnapshot.empty) {
+      const presupuestoData = presupuestoSnapshot.docs[0].data();
+      console.log("Presupuesto encontrado:", presupuestoData); // Depuración
+      return presupuestoData.monto; // Retornar el monto del presupuesto
+    } else {
+      console.log("No se encontró presupuesto para el mes:", mesSeleccionado); // Depuración
+      return 0; // Si no hay presupuesto, retornar 0
+    }
+  } catch (error) {
+    console.error("Error al obtener el presupuesto:", error);
+    return 0;
+  }
+};
+// Función para obtener las transacciones del mes
 const obtenerTransaccionesMes = async (userId, mes) => {
   try {
     const colecciones = ['gastos', 'ingresos'];
@@ -47,6 +77,7 @@ export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(transactionReducer, initialState);
   const { user } = useAuth();
   const { mesSeleccionado } = useMonth();
+  const [presupuestoFijo, setPresupuestoFijo] = useState(0);
 
   // Función para cargar las transacciones desde Firebase
   useEffect(() => {
@@ -72,6 +103,16 @@ export const GlobalProvider = ({ children }) => {
   
     fetchTransacciones();
   }, [user, mesSeleccionado]);
+
+  // Función para cargar el presupuesto desde Firebase
+  useEffect(() => {
+    const fetchPresupuesto = async () => {
+      const monto = await obtenerPresupuesto(mesSeleccionado);
+      setPresupuestoFijo(monto); // Actualizar el estado del presupuesto fijo
+    };
+
+    fetchPresupuesto();
+  }, [mesSeleccionado]);
 
   // Función para agregar una transacción
   const addTransaction = async (transaction, tipo) => {
@@ -116,6 +157,7 @@ export const GlobalProvider = ({ children }) => {
         loading: state.loading,
         error: state.error,
         mesAnterior: state.mesAnterior,
+        presupuestoFijo,
         addTransaction,
         deleteTransaction,
       }}

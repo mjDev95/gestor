@@ -12,6 +12,7 @@ import ResumenFinanciero from "../../components/resumenFinanciero/ResumenFinanci
 import SelectorMeses from "../../components/meses/SelectorMeses";
 //import { cargarTransaccionesFicticias } from '../../utils/cargarTransaccionesFicticias';
 import { useMonth } from '../../context/monthContext';
+import Presupuesto from '../../components/presupuesto/Presupuesto';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -66,7 +67,7 @@ const Dashboard = () => {
       <div className={`d-flex flex-column flex-md-row gap-1 dashboard-container position-relative vh-100 overflow-hidden app ${showPerfil ? 'active' : ''}`}>
         <SideBar handleLogout={handleLogoutClick} user={user} setShowModal={setShowModal}/>
 
-        <div className="flex-md-fill overflow-x-auto ps-md-1 vstack order-0 order-md-1">
+        <div className="content-dash flex-md-fill overflow-x-auto ps-md-1 vstack order-0 order-md-1">
           {/* Contenido principal */}
           <div className="row file-tabs sticky-top align-items-center g-0 py-4 py-md-0">
             <div className="col-md-3 mb-2 mb-md-0">
@@ -82,13 +83,13 @@ const Dashboard = () => {
           {/* Fila del contenido dinámico */}
           <div className="content-info overflow-y-auto rounded-top-4">
             <main className="px-3 py-5">
-              <ResumenFinanciero />
-              <div className="row g-5">
-                <div className="col-12 col-md-6">
+              <div className="row">
+                <div className="col-12 col-md-8">
+                  <ResumenFinanciero />
                   <TransactionList />
                 </div>
-                <div className="col-12 col-md-6">
-                  {/* Otro contenido aquí */}
+                <div className="col-12 col-md-4 col-xxl-3">
+                  <Presupuesto />
                 </div>
               </div>
             </main>
