@@ -25,19 +25,26 @@ const transactionReducer = (state, action) => {
         error: null,
       };
     case 'ADD_TRANSACTION':
-      const updatedTransactions = [action.payload, ...state.transactions].sort(
-        (a, b) => new Date(b.fecha) - new Date(a.fecha)
-      );
       return {
         ...state,
-        transactions: updatedTransactions,
+        transactions: {
+          ...state.transactions,
+          actual: [action.payload, ...(state.transactions.actual || [])]
+            .sort((a, b) => new Date(b.fecha) - new Date(a.fecha)),
+        },
       };
     case 'DELETE_TRANSACTION':
       return {
         ...state,
-        transactions: state.transactions.filter(
-          (transaction) => transaction.id !== action.payload
-        ),
+        transactions: {
+          ...state.transactions,
+          actual: (state.transactions.actual || []).filter(
+            (transaction) => transaction.id !== action.payload
+          ),
+          previo: (state.transactions.previo || []).filter(
+            (transaction) => transaction.id !== action.payload
+          ),
+        },
       };
     case 'SET_ERROR':
       return {

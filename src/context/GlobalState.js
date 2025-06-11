@@ -3,8 +3,8 @@ import transactionReducer from './transactionReducer';
 import { db } from '../db/firebase-config';
 import { collection, getDocs, addDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
-import { useMonth } from './monthContext'; 
-import { getMesAnterior } from '../utils/formatDate';
+import { useMonth  } from './monthContext'; 
+import { getRangoPeriodo } from '../utils/formatDate';
 
 const GlobalContext = createContext();
 
@@ -14,48 +14,56 @@ const initialState = {
   error: null,
   mesAnterior: null,
 };
+
 // Función para obtener el presupuesto desde Firebase
-const obtenerPresupuesto = async (mesSeleccionado) => {
+const obtenerPresupuesto = async (userId, mesSeleccionado, rangoFechas) => {
   try {
-    // Construir el rango de fechas para el mes seleccionado
-    const inicioMes = `${mesSeleccionado}-01`; // Ejemplo: "2024-07-01"
-    const finMes = `${mesSeleccionado}-31`; // Ejemplo: "2024-07-31"
+    if (!userId) {
+      throw new Error("🚨 userId es obligatorio para obtener el presupuesto.");
+    }
+
+    const rango = getRangoPeriodo(mesSeleccionado, rangoFechas);
+    const inicioFecha = rango.inicio;
+    const finFecha = rango.fin;
 
     const presupuestoQuery = query(
       collection(db, "presupuestos"),
-      where("fecha", ">=", inicioMes), // Inicio del mes
-      where("fecha", "<=", finMes) // Fin del mes
+      where("userId", "==", userId),
+      where("fecha", ">=", inicioFecha),
+      where("fecha", "<=", finFecha)
     );
 
     const presupuestoSnapshot = await getDocs(presupuestoQuery);
 
-    console.log("Consulta presupuesto:", presupuestoSnapshot.docs); // Depuración
-
-    if (!presupuestoSnapshot.empty) {
-      const presupuestoData = presupuestoSnapshot.docs[0].data();
-      console.log("Presupuesto encontrado:", presupuestoData); // Depuración
-      return presupuestoData.monto; // Retornar el monto del presupuesto
-    } else {
-      console.log("No se encontró presupuesto para el mes:", mesSeleccionado); // Depuración
-      return 0; // Si no hay presupuesto, retornar 0
-    }
+    return !presupuestoSnapshot.empty ? presupuestoSnapshot.docs[0].data().monto : 0;
   } catch (error) {
-    console.error("Error al obtener el presupuesto:", error);
+    console.error("🚨 Error al obtener presupuesto:", error);
     return 0;
   }
 };
+
 // Función para obtener las transacciones del mes
-const obtenerTransaccionesMes = async (userId, mes) => {
+const obtenerTransaccionesMes = async (userId, mesSeleccionado, rangoFechas) => {
   try {
-    const colecciones = ['gastos', 'ingresos'];
+    if (!userId) {
+      throw new Error("🚨 userId es obligatorio para obtener las transacciones.");
+    }
+
+    const rango = getRangoPeriodo(mesSeleccionado, rangoFechas);
+    const inicioFecha = rango.inicio;
+    const finFecha = rango.fin;
+
+    console.log("🔍 Consultando transacciones para usuario:", userId, "| Rango:", inicioFecha, "→", finFecha,"|");
+
+    const colecciones = ["gastos", "ingresos"];
     const todas = [];
 
     for (const col of colecciones) {
       const q = query(
         collection(db, col),
         where("userId", "==", userId),
-        where("fecha", ">=", `${mes}-01`),
-        where("fecha", "<=", `${mes}-31`)
+        where("fecha", ">=", inicioFecha),
+        where("fecha", "<=", finFecha)
       );
 
       const querySnapshot = await getDocs(q);
@@ -66,53 +74,60 @@ const obtenerTransaccionesMes = async (userId, mes) => {
 
     return todas;
   } catch (error) {
-    console.error("Error al obtener transacciones:", error);
+    console.error("🚨 Error al obtener transacciones:", error);
     return [];
   }
 };
 
-
-
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(transactionReducer, initialState);
   const { user } = useAuth();
-  const { mesSeleccionado } = useMonth();
+  const { mesSeleccionado, rangoFechas } = useMonth();
   const [presupuestoFijo, setPresupuestoFijo] = useState(0);
 
   // Función para cargar las transacciones desde Firebase
   useEffect(() => {
     const fetchTransacciones = async () => {
-      if (!user) return;
-  
+      if (!user || !rangoFechas || !mesSeleccionado) return
+
       dispatch({ type: "SET_LOADING" });
-  
-      // ✅ Obtenemos los dos meses
-      const mesAnterior = getMesAnterior(mesSeleccionado);
-  
-      // ✅ Llamamos la función dos veces con diferentes meses
-      const transaccionesActual = await obtenerTransaccionesMes(user.uid, mesSeleccionado);
-      const transaccionesPrevias = await obtenerTransaccionesMes(user.uid, mesAnterior);
-  
+
+      // Calcula el mes anterior en formato YYYY-MM
+      const [anio, mes] = mesSeleccionado.split("-");
+      const mesAnterior = mes - 1 > 0 ? String(mes - 1).padStart(2, "0") : "12";
+      const anioAnterior = mes - 1 > 0 ? anio : anio - 1;
+      const mesAnteriorStr = `${anioAnterior}-${mesAnterior}`;
+      const periodoAnterior = getRangoPeriodo(mesAnteriorStr, rangoFechas);
+
+      console.log("🔍 Período anterior calculado:", periodoAnterior);
+
+      if (!periodoAnterior) return; // Evitar errores si `null`
+
+      const transaccionesActual = await obtenerTransaccionesMes(user.uid, mesSeleccionado, rangoFechas);
+      const transaccionesPrevias = await obtenerTransaccionesMes(user.uid, mesAnteriorStr, rangoFechas);
+
       dispatch({
         type: "SET_TRANSACTIONS",
         payload: { actual: transaccionesActual, previo: transaccionesPrevias },
       });
-  
-      dispatch({ type: "SET_MES_ANTERIOR", payload: mesAnterior });
+
+      dispatch({ type: "SET_MES_ANTERIOR", payload: periodoAnterior.inicio });  
     };
-  
+
     fetchTransacciones();
-  }, [user, mesSeleccionado]);
+  }, [user, mesSeleccionado, rangoFechas]);
 
   // Función para cargar el presupuesto desde Firebase
   useEffect(() => {
     const fetchPresupuesto = async () => {
-      const monto = await obtenerPresupuesto(mesSeleccionado);
-      setPresupuestoFijo(monto); // Actualizar el estado del presupuesto fijo
+      if (!user?.uid || !rangoFechas) return;
+
+      const presupuestoActual = await obtenerPresupuesto(user.uid, mesSeleccionado, rangoFechas);
+      setPresupuestoFijo(presupuestoActual);
     };
 
     fetchPresupuesto();
-  }, [mesSeleccionado]);
+  }, [user, mesSeleccionado, rangoFechas]);
 
   // Función para agregar una transacción
   const addTransaction = async (transaction, tipo) => {
@@ -121,7 +136,6 @@ export const GlobalProvider = ({ children }) => {
         alert('La fecha es obligatoria y no puede estar vacía.'); // Mostrar alerta
         return; // Detener la ejecución si falta la fecha
       }
-      console.log('Fecha enviada a Firebase:', transaction.fecha); // Depuración
       const nuevaRef = await addDoc(collection(db, tipo), {
         ...transaction,
         fecha: transaction.fecha,
@@ -134,6 +148,27 @@ export const GlobalProvider = ({ children }) => {
       });
     } catch (error) {
       console.error('Error al agregar transacción:', error);
+    }
+  };
+
+  // Función para manejar el guardado de un gasto/ingreso
+  const handleSaveExpense = async (formData, tipo) => {
+    if (!formData.nombre || !formData.monto) {
+      alert("Por favor, complete todos los campos.");
+      return;
+    }
+
+    const transaccion = {
+      ...formData,
+      tipo, // "gasto" o "ingreso"
+      userId: user.uid,
+    };
+
+    try {
+      await addTransaction(transaccion, tipo);
+      // El cierre del modal ahora lo maneja el componente que llama a esta función
+    } catch (error) {
+      alert("Hubo un error al guardar la transacción.");
     }
   };
 
@@ -160,6 +195,7 @@ export const GlobalProvider = ({ children }) => {
         presupuestoFijo,
         addTransaction,
         deleteTransaction,
+        handleSaveExpense
       }}
     >
       {children}

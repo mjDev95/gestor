@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { obtenerTarjetas, agregarTarjeta, agregarGasto } from '../firestoreService'; 
+import { obtenerTarjetas, agregarTarjeta, agregarGasto } from '../../firestoreService'; 
 
 const AddExpenseModal = ({ showModal, handleClose, user, handleSaveExpense }) => {
     const [formData, setFormData] = useState({

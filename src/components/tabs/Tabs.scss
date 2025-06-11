@@ -1,0 +1,19 @@
+.tab-button {
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  color: var(--texto-principal);
+
+  &.active {
+    color: var(--color-main);
+  }
+}
+
+.tabs-indicator {
+  height: 3px;
+  width: 0;
+  background-color: var(--color-main);
+  transition: none;
+  border-radius: 3px 3px 0 0;
+  will-change: transform, width;
+}

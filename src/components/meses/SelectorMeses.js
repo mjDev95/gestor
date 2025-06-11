@@ -2,37 +2,60 @@ import React, { useEffect, useMemo } from 'react';
 import { useMonth } from '../../context/monthContext';
 import { useMeses } from '../../hooks/useMeses';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { formatearMes } from '../../utils/formatDate';
+import { getRangoPeriodo } from '../../utils/formatDate';
 import 'swiper/css';
 import './SelectorMeses.scss';
 
-
-
 const SelectorMeses = () => {
   const { meses, cargando } = useMeses();
-  const { mesSeleccionado, cambiarMes } = useMonth(); // Accedemos al mes y a la función cambiarMes desde el contexto
+  const { rangoFechas, mesSeleccionado, cambiarMes } = useMonth();
 
-  const mesActualStr = new Date().toISOString().slice(0, 7);
+  // Genera los periodos personalizados
+  const periodos = useMemo(() => {
+    if (!meses.length || !rangoFechas) return [];
+    return meses.map((mesStr) => {
+      const rango = getRangoPeriodo(mesStr, rangoFechas);
 
-  const mesesOrdenados = useMemo(() => {
-    return [...meses];
-  }, [meses]);
+      // Obtener mes y año de la fecha de fin
+      const fechaFin = new Date(rango.fin);
+      const nombreTab = `${fechaFin.toLocaleString('es-ES', { month: 'short' }).toUpperCase()} ${fechaFin.getFullYear().toString().slice(-2)}`;
 
-  const inicialIndex = useMemo(() => {
-    return mesesOrdenados.findIndex(
-      (mes) => mes === mesSeleccionado || mes === mesActualStr
-    );
-  }, [mesesOrdenados, mesSeleccionado, mesActualStr]);
+      return {
+        mesStr,
+        ...rango,
+        nombreTab,
+        periodoLabel: `${rango.inicio} - ${rango.fin}`,
+        fechaInicio: rango.inicio,
+        fechaFin: rango.fin,
+      };
+    });
+  }, [meses, rangoFechas]);
 
   useEffect(() => {
-    if (!mesSeleccionado && mesesOrdenados.includes(mesActualStr)) {
-      cambiarMes(mesActualStr); // Actualizamos el mes en el contexto
+    if (periodos.length) {
+      console.log('Periodos generados hoy:', periodos);
     }
-  }, [mesSeleccionado, mesesOrdenados, mesActualStr, cambiarMes]);
+  }, [periodos]);
 
-  const manejarClick = (mes) => {
-    cambiarMes(mes); 
-  };
+  // Detecta el periodo activo según la fecha actual
+  useEffect(() => {
+    const hoy = new Date();
+
+    if (!mesSeleccionado && periodos.length) {
+      const periodoActivo = [...periodos].reverse().find(
+        (p) =>
+          hoy >= new Date(p.fechaInicio) &&
+          hoy <= new Date(p.fechaFin)
+      );
+      if (periodoActivo) cambiarMes(periodoActivo.mesStr);
+    }
+  }, [mesSeleccionado, periodos, cambiarMes]);
+
+  const inicialIndex = useMemo(() => {
+    return periodos.findIndex(
+      (p) => p.mesStr === mesSeleccionado
+    );
+  }, [periodos, mesSeleccionado]);
 
   if (cargando) return null;
 
@@ -45,34 +68,23 @@ const SelectorMeses = () => {
         grabCursor={true}
         className="swiper-meses"
         breakpoints={{
-          576: {
-            slidesPerView: 3, // Tablet pequeña
-          },
-          768: {
-            slidesPerView: 3, // Tablet
-          },
-          992: {
-            slidesPerView: 5, // Desktop
-          },
-          1200: {
-            slidesPerView: 6, // Pantallas más grandes
-          },
+          576: { slidesPerView: 3 },
+          768: { slidesPerView: 3 },
+          992: { slidesPerView: 5 },
+          1200: { slidesPerView: 6 },
         }}
       >
-        {mesesOrdenados.map((mesStr) => {
-          const textoMes = formatearMes(mesStr);
-
-          return (
-            <SwiperSlide key={mesStr} style={{ width: 'auto' }} className='py-3'>
-              <button
-                className={`btn-month rounded-pill text-uppercase w-100 btn ${mesSeleccionado === mesStr ? 'active' : ''}`}
-                onClick={() => manejarClick(mesStr)}
-              >
-                {textoMes}
-              </button>
-            </SwiperSlide>
-          );
-        })}
+        {periodos.map((periodo) => (
+          <SwiperSlide key={periodo.mesStr} style={{ width: 'auto' }} className='py-3'>
+            <button
+              className={`btn-month rounded-pill text-uppercase w-100 btn ${mesSeleccionado === periodo.mesStr ? 'active' : ''}`}
+              onClick={() => cambiarMes(periodo.mesStr)}
+              data-periodo={periodo.periodoLabel}
+            >
+              {periodo.nombreTab}
+            </button>
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

@@ -5,12 +5,12 @@ import "./ResumenFinanciero.scss";
 import { ArrowDownCircle, ArrowUpCircle, Wallet2, Coin } from "react-bootstrap-icons";
 import { calcularVariacion } from "../../utils/math";
 import { formatAmount } from "../../utils/formatMoney";
-import { getNombreMes } from "../../utils/formatDate";
+import { getRangoPeriodo } from "../../utils/formatDate";
 import { getMonthTransactions } from "../../utils/transactions";
 
 const ResumenFinanciero = () => {
   const { transactions, loading, mesAnterior } = useGlobalState(); 
-  const { mesSeleccionado } = useMonth();
+  const { mesSeleccionado, rangoFechas } = useMonth();
 
   if (loading || !mesSeleccionado) {
     return (
@@ -19,9 +19,6 @@ const ResumenFinanciero = () => {
       </div>
     );
   }
-  
-  console.log("Mes seleccionado:", mesSeleccionado);
-  console.log("Mes anterior calculado:", mesAnterior);
 
   const ingresosActual = getMonthTransactions(transactions.actual, "ingresos");
   const ingresosPrevio = getMonthTransactions(transactions.previo, "ingresos");
@@ -66,6 +63,11 @@ const ResumenFinanciero = () => {
     },
   ];
 
+  // Calcula el rango del periodo anterior
+  const periodoAnterior = mesAnterior && rangoFechas
+    ? getRangoPeriodo(mesAnterior, rangoFechas)
+    : null;
+
   return (
     <div className="row resumen-financiero justify-content-between align-items-stretch">
       {resumen.map((item, index) => {
@@ -84,12 +86,14 @@ const ResumenFinanciero = () => {
                 <div className="w-100 d-flex justify-content-between align-items-center my-2">
                   <div>
                     <h5 className="card-title fw-light h6 mb-1">{item.titulo}</h5>
-                      <p className="card-text resumen-valor h4 mb-0 ">
-                        ${formatAmount(item.valor)}
-                      </p>
-                      <p className="d-none card-text resumen-valor h6 mb-0 ">
-                        {getNombreMes(mesAnterior)}: ${formatAmount(item.previo)}
-                      </p>
+                    <p className="card-text resumen-valor h4 mb-0 ">
+                      ${formatAmount(item.valor)}
+                    </p>
+                    <p className="d-none card-text resumen-valor h6 mb-0">
+                      {periodoAnterior
+                        ? `${periodoAnterior.inicio} a ${periodoAnterior.fin}: ${formatAmount(item.previo)}`
+                        : "Periodo anterior no disponible"}
+                    </p>
                   </div>
                   <div className="ms-auto mt-auto me-0">
                     {item.titulo !== "Saldo disponible" && (
@@ -100,27 +104,30 @@ const ResumenFinanciero = () => {
                   </div>
                 </div>
               </div>
-              <div className="alerta-resumen mt-1">
-                <small className="fw-light lh-1">
-                  {item.valor === item.previo ? (
-                    "Igual que el mes anterior"
-                  ) : item.valor > item.previo ? (
-                    <>
-                      <span className="text-success">
-                        ${formatAmount(item.valor - item.previo)}
-                      </span>{" "}
-                      más que el mes anterior
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-danger">
-                        ${formatAmount(item.previo - item.valor)}
-                      </span>{" "}
-                      menos que el mes anterior
-                    </>
-                  )}
-                </small>
-              </div>
+              {/* Solo mostrar alerta-resumen si NO es "Saldo disponible" */}
+              {item.titulo !== "Saldo disponible" && (
+                <div className="alerta-resumen mt-1">
+                  <small className="fw-light lh-1">
+                    {item.valor === item.previo ? (
+                      "Igual que el periodo anterior"
+                    ) : item.valor > item.previo ? (
+                      <>
+                        <span className="text-success">
+                          ${formatAmount(item.valor - item.previo)}
+                        </span>{" "}
+                        más que el periodo anterior
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-danger">
+                          ${formatAmount(item.previo - item.valor)}
+                        </span>{" "}
+                        menos que el periodo anterior
+                      </>
+                    )}
+                  </small>
+                </div>
+              )}
             </div>
           </div>
         );

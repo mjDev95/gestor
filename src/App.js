@@ -3,6 +3,10 @@ import { AuthProvider } from './context/AuthContext';
 import { GlobalProvider } from './context/GlobalState';
 import { BrowserRouter } from "react-router-dom";
 import { MonthProvider } from "./context/monthContext";
+import { ModalProvider } from "./context/ModalContext";
+import GlobalModal from "./components/modals/GlobalModal";
+import { PerfilProvider } from "./context/PerfilContext";
+import Configuracion from "./components/configuracion";
 
 import Router from "./router";
 
@@ -11,11 +15,17 @@ const App = () => {
     <ThemeProvider>
       <AuthProvider>
         <MonthProvider>
-          <GlobalProvider>
-            <BrowserRouter>
-              <Router />
-            </BrowserRouter>
-          </GlobalProvider>
+          <PerfilProvider>
+            <GlobalProvider>
+              <BrowserRouter>
+                <ModalProvider>
+                  <Router />
+                  <GlobalModal />
+                  <Configuracion />
+                </ModalProvider>
+              </BrowserRouter>
+            </GlobalProvider>
+          </PerfilProvider>
         </MonthProvider>
       </AuthProvider>
     </ThemeProvider>
