@@ -1,16 +1,18 @@
 import { useDashboard } from "../../context/dashboardContext";
 import Inicio from "../../components/inicio/Inicio";
 import Maintenance from "../support/Maintenance";
+import Transactions from "../../components/transactions/Transactions";
+import DashboardHeader from "../../components/headers/DashboardHeader";
+
 /*import Tarjetas from "../../components/tarjetas/Tarjetas";
-import Transacciones from "../../components/transactions/Transacciones";
 import Configuracion from "../../components/configuracion/Configuracion";*/
 
 const sections = {
   inicio: Inicio,
   mantenimiento: Maintenance,
-  /*tarjetas: Tarjetas,
-  transacciones: Transacciones,
-  configuracion: Configuracion,*/
+  transacciones: Transactions,
+  /*tarjetas: Tarjetas,*/
+  /*configuracion: Configuracion,*/
 };
 
 function ContentDash() {
@@ -18,8 +20,11 @@ function ContentDash() {
   const ActiveComponent = sections[activeSection] || Inicio; 
 
   return (
-    <div className="content-dash flex-md-fill overflow-x-auto ps-md-1 vstack order-0 order-md-1">
-      <ActiveComponent />
+    <div className="content-dash vh-100 overflow-hidden d-flex flex-column flex-md-fill order-0 order-md-1">
+      <DashboardHeader />
+      <div className="overflow-hidden">
+        <ActiveComponent />
+      </div>
     </div>
   );
 }

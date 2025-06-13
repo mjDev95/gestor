@@ -77,8 +77,8 @@ const ResumenFinanciero = () => {
         const colorClase = aumento ? "text-success" : "text-danger";
 
         return (
-          <div key={index} className="col-xxl-3 col-sm-6 mb-4">
-            <div className={`d-flex flex-column justify-content-between p-4 rounded border-0 h-100 resumen-card ${item.clase}`}>
+          <div key={index} className="col-xxl-3 col-6 mb-4">
+            <div className={`d-flex flex-column justify-content-between p-3 p-md-4 rounded border-0 h-100 resumen-card ${item.clase}`}>
               <div className="d-flex flex-row align-items-center gap-2">
                 <div className="icon-stage d-flex justify-content-center align-items-center rounded-3">
                   <Icon size={16} className="text-primary" />

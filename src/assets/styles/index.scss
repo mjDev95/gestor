@@ -64,7 +64,7 @@ FONT FACE
 }
 @font-face {
   font-family: 'bolds';
-  src: local('bolds'), url(../fonts/Antonio-VariableFont_wght.ttf) format('truetype');
+  src: local('bolds'), url(../fonts/Prompt-Black.ttf) format('truetype');
 }
 
 /*--------------------------------------------------------------
@@ -76,7 +76,6 @@ body {
   background-color: var(--modo-claro) !important;
   color: var(--texto-secundario) !important;
   font-size: var(--font-size-default) !important;
-  transition: background-color 0.5s cubic-bezier(0.25, 0.1, 0.4, -0.12), color 0.5s cubic-bezier(0, 0, 0.05, -0.57);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -157,6 +156,10 @@ body, p, li {
   opacity: 1
 }
 
+.dragrable{
+  cursor: grab;
+  user-select: none;
+}
 /*--------------------------------------------------------------
 SIDEBAR
 --------------------------------------------------------------*/
@@ -192,8 +195,8 @@ Modal
   .modal-content {
     background-color: var(--modo-claro) !important;
     color: var(--texto-secundario) !important;
-    .btn-close {
-      --bs-btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414'/%3e%3c/svg%3e") !important;
+    .close-btn {
+      color: var(--texto-principal) !important;
     }
   }
   .form-control{
@@ -333,6 +336,9 @@ Formularios
 .btn{
   min-width: 56px;
   min-height: 56px;
+}
+.btn-list{
+  height: 56px;
 }
 .morph-btn {
   display: flex;

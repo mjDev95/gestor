@@ -9,7 +9,7 @@ const SaludoUsuario = () => {
     const firstName = userInfo.displayName.split(' ')[0];
 
     return (
-      <div className="saludo-usuario mb-4">
+      <div className="saludo-usuario mt-5 mb-3">
         <h2 className="saludo-text">Hola, {firstName}</h2>
       </div>
     );

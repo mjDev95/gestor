@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { usePerfil } from '../../context/PerfilContext';
 import RangoFechas from "../configuracion/RangoFechas";
+import { Sun, Moon, GearFill } from 'react-bootstrap-icons';
+import { ThemeContext } from '../../theme/ThemeProvider';
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 
 const Configuracion = () => {
   const { showPerfil, cerrarPerfil } = usePerfil();
   const [isVisible, setIsVisible] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { handleLogout } = useAuth();
+  const navigate = useNavigate();
 
     // Montaje controlado
   useEffect(() => {
@@ -24,6 +31,11 @@ const Configuracion = () => {
     }
   }, [showPerfil]);
 
+  const handleLogoutClick = async () => {
+    await handleLogout();  
+    navigate('/login'); 
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -41,7 +53,16 @@ const Configuracion = () => {
           <button className="d-flex btn-close ms-auto me-0" onClick={cerrarPerfil}></button>
           <h2 className="fw-bold">⚙️ Configuración</h2>
           <div className="config-sections">
+            <div className="d-flex gap-2 mb-3">
+              <button className="btn btn-sidebar" onClick={toggleTheme}>
+                {theme === 'dark' ? <Sun color="gold" size={16} /> : <Moon color="silver" size={16} />}
+              </button>
+              <button className="btn btn-sidebar" onClick={handleLogoutClick}>
+                <GearFill color="green" size={20} />
+              </button>
+            </div>
             <RangoFechas />
+            
           </div>
         </div>
       </div>

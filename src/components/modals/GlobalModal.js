@@ -3,8 +3,9 @@ import { useModal } from "../../context/ModalContext";
 import ExpenseForm from "../transactions/ExpenseForm";
 import IncomeForm from "../transactions/IncomeForm";
 import Tabs from "../tabs/Tabs";
-import { Check, ExclamationCircle } from "react-bootstrap-icons";
+import { Check, ExclamationCircle, XLg } from "react-bootstrap-icons";
 import { showBackdrop, showModal, hideModal, hideBackdrop, morphToCircle, morphToRect, bounceCheck, shakeButton, showErrorMsg, } from "../../utils/gsapAnimations";
+import { useSwipeTabs } from "../../hooks/useSwipeTabs";
 
 const GlobalModal = () => {
   const { modal, closeModal } = useModal();
@@ -88,8 +89,6 @@ const GlobalModal = () => {
     handleClose();
   };
 
-  if (!modal.open && !isVisible) return null;
-
   let modalTitle = "Modal";
   let tabs = null;
   let activeTabData = null;
@@ -119,6 +118,9 @@ const GlobalModal = () => {
     default:
       break;
   }
+  const { handleStart, handleEnd } = useSwipeTabs({ tabs, activeTab, setActiveTab });
+
+  if (!modal.open && !isVisible) return null;
 
   return (
     <div className="modal fade show d-block" tabIndex="-1">
@@ -130,7 +132,9 @@ const GlobalModal = () => {
           <div className="modal-header d-block border-0 pb-0 px-4 pt-4">
             <div className="d-flex align-items-center justify-content-between w-100 mb-3">
               <h5 className="modal-title">{modalTitle}</h5>
-              <button type="button" className="btn-close" aria-label="Close" onClick={handleCancel}></button>
+              <button type="button" className="close-btn btn btn-link" aria-label="Close" onClick={handleCancel}>
+                <XLg size={24} />
+              </button>
             </div>
             
             {tabs && (
@@ -138,7 +142,9 @@ const GlobalModal = () => {
             )}
           </div>
           <div className="modal-body px-4">
-            <div className="tabs-content">{activeTabData?.content}</div>
+            <div className="tabs-content dragrable" onTouchStart={handleStart} onTouchEnd={handleEnd} onMouseDown={handleStart} onMouseUp={handleEnd}>
+              {activeTabData?.content}
+            </div>
           </div>
 
           <div className="modal-footer p-4 pt-2 border-top-0 position-relative">
