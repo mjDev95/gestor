@@ -4,7 +4,7 @@ import TransactionList from "./TransactionList";
 
 function Transactions() {
   return (
-      <div className="row px-3">
+      <div className="row px-md-3">
         <div className="col-lg-11 ms-md-auto">
           <TransactionList view="detalle"/>
         </div>

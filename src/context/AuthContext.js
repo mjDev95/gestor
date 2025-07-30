@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../db/firebase-config';
-import { signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut, onAuthStateChanged } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const AuthContext = createContext();
@@ -25,9 +25,9 @@ export const AuthProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [setUserInfo]);
 
-  const handleLogin = async (type = "google") => {
+  const handleLogin = async (type = "google", email = "", password = "") => {
     try {
       let currentUser;
 
@@ -35,8 +35,13 @@ export const AuthProvider = ({ children }) => {
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
         currentUser = result.user;
+
       } else if (type === "guest") {
-        const result = await signInAnonymously(auth);
+        const result = await signInWithEmailAndPassword(auth, "mjgaliciab@gmail.com", "demo123");
+        currentUser = result.user;
+
+      } else if (type === "email") {
+        const result = await signInWithEmailAndPassword(auth, email, password);
         currentUser = result.user;
       }
 

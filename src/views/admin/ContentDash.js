@@ -1,6 +1,7 @@
 import { useDashboard } from "../../context/dashboardContext";
 import Inicio from "../../components/inicio/Inicio";
 import Maintenance from "../support/Maintenance";
+import SaludoUsuario from "../../components/saludo/SaludoUsuario";
 import Transactions from "../../components/transactions/Transactions";
 import DashboardHeader from "../../components/headers/DashboardHeader";
 
@@ -20,11 +21,10 @@ function ContentDash() {
   const ActiveComponent = sections[activeSection] || Inicio; 
 
   return (
-    <div className="content-dash vh-100 overflow-hidden d-flex flex-column flex-md-fill order-0 order-md-1">
+    <div className="content-dash overflow-y-scroll overflow-x-hidden d-flex flex-column flex-md-fill order-0 order-md-1">
+      <SaludoUsuario />
       <DashboardHeader />
-      <div className="overflow-hidden">
-        <ActiveComponent />
-      </div>
+      <ActiveComponent />
     </div>
   );
 }

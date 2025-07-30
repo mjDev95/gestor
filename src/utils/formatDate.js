@@ -80,3 +80,17 @@ export const obtenerMesActual = () => {
   const anio = hoy.getFullYear();
   return `${anio}-${mes}`;
 };
+
+
+// Devuelve "12 Jun"
+export const formatearDiaMesCorto = (fechaISO) => {
+  if (!fechaISO) return "";
+
+  const fecha = new Date(fechaISO);
+  const dia = fecha.getDate();
+  const nombreMesCorto = fecha.toLocaleString("es-ES", {
+    month: "short",
+  });
+
+  return `${dia} ${nombreMesCorto.charAt(0).toUpperCase()}${nombreMesCorto.slice(1)}`;
+};

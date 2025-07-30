@@ -77,7 +77,7 @@ const SelectorMeses = () => {
         {periodos.map((periodo) => (
           <SwiperSlide key={periodo.mesStr} style={{ width: 'auto' }} className='py-3'>
             <button
-              className={`btn-month rounded-pill text-uppercase w-100 btn ${mesSeleccionado === periodo.mesStr ? 'active' : ''}`}
+              className={`btn-month rounded-pill text-uppercase w-100 py-0 btn ${mesSeleccionado === periodo.mesStr ? 'active' : ''}`}
               onClick={() => cambiarMes(periodo.mesStr)}
               data-periodo={periodo.periodoLabel}
             >

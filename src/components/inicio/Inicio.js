@@ -5,7 +5,7 @@ import Presupuesto from "../../components/presupuesto/Presupuesto";
 
 function Inicio() {
   return (
-    <main className="p-3 content-info h-100 overflow-y-auto rounded-top-4">
+    <main className="p-3 content-info">
       {/* Contenido principal */}
       <div className="row">
         <div className="col-12 col-md-8">
