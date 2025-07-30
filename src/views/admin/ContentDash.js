@@ -1,5 +1,6 @@
 import { useDashboard } from "../../context/dashboardContext";
 import Inicio from "../../components/inicio/Inicio";
+import Tarjetas from "../../components/tarjetas/Tarjetas";
 import Maintenance from "../support/Maintenance";
 import SaludoUsuario from "../../components/saludo/SaludoUsuario";
 import Transactions from "../../components/transactions/Transactions";
@@ -12,7 +13,7 @@ const sections = {
   inicio: Inicio,
   mantenimiento: Maintenance,
   transacciones: Transactions,
-  /*tarjetas: Tarjetas,*/
+  tarjetas: Tarjetas,
   /*configuracion: Configuracion,*/
 };
 

@@ -27,7 +27,7 @@ const SideBar = () => {
                     </button>
                 </li>
                 <li>
-                    <button className="btn btn-sidebar mx-auto my-2 my-lg-3 mx-lg-3" onClick={() => setActiveSection("mantenimiento")}>
+                    <button className="btn btn-sidebar mx-auto my-2 my-lg-3 mx-lg-3" onClick={() => setActiveSection("tarjetas")}>
                         <CreditCardFill color="purple" size={20} />
                     </button>
                 </li>
