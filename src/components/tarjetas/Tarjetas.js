@@ -1,16 +1,18 @@
 import React from "react";
 import TarjetasSwiper from "./TarjetasSwiper";
+import DonutComparativoTarjetas from "./DonutComparativoTarjetas";
+import "./DonutComparativoTarjetas.scss";
+import { useGlobalState } from '../../context/GlobalState';
 import "./TarjetasSwiper.scss";
 
 function Tarjetas() {
-  // Aquí podrías traer las tarjetas reales desde props, contexto o fetch
+  const { tarjetas, transactions } = useGlobalState();
   return (
     <main className="p-3 content-info">
       <div className="container-fluid">
         <div className="row mb-4 align-items-center">
           <div className="col">
             <h2 className="mb-0">Mis tarjetas</h2>
-            <p className="text-muted mb-0">Gestiona y visualiza todas tus tarjetas bancarias y métodos de pago.</p>
           </div>
           <div className="col-auto">
             <button className="btn btn-primary">
@@ -20,6 +22,7 @@ function Tarjetas() {
           </div>
         </div>
         <TarjetasSwiper />
+  <DonutComparativoTarjetas tarjetas={tarjetas} transacciones={transactions.actual} />
       </div>
     </main>
   );

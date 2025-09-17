@@ -1,49 +1,27 @@
-.tarjetas-swiper-container {
-  width: 100%;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-}
-
 .tarjetas-swiper {
   display: flex;
   gap: 2rem;
   transition: all 0.3s;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-}
-
-.tarjeta-slide {
-  min-width: 85vw;
-  max-width: 350px;
-  flex: 0 0 auto;
-  scroll-snap-align: center;
-  transition: transform 0.3s;
-}
-
-@media (min-width: 576px) {
-  .tarjeta-slide {
-    min-width: 45vw;
-    max-width: 320px;
+  .tarjeta-virtual {
+    width: 100%;
+    aspect-ratio: 1.586;
+    inset: 0;
+    background: linear-gradient(135deg, var(--color-main), var(--color-second));
+    -webkit-backdrop-filter: blur(150px);
+    backdrop-filter: blur(150px);
   }
 }
 
-@media (min-width: 768px) {
-  .tarjeta-slide {
-    min-width: 32vw;
-    max-width: 300px;
-  }
-}
 
-@media (min-width: 992px) {
-  .tarjeta-slide {
-    min-width: 24vw;
-    max-width: 280px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .tarjeta-slide {
-    min-width: 18vw;
-    max-width: 260px;
+.swiper-scrollbar {
+  &.swiper-scrollbar-horizontal{
+    border-radius: 2px;
+    height: 5px;
+    width: 200px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }

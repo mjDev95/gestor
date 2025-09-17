@@ -1,83 +1,49 @@
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../db/firebase-config';
+// Bancos ejemplo para tarjetas
+const bancos = [
+  { nombre: 'BBVA', logo: '/img/banks/bbva.svg' },
+  { nombre: 'Santander', logo: '/img/banks/santander.svg' },
+  { nombre: 'Banorte', logo: '/img/banks/banorte.svg' },
+  { nombre: 'HSBC', logo: '/img/banks/hsbc.svg' },
+  { nombre: 'Citibanamex', logo: '/img/banks/banamex.svg' },
+];
 
-// Categorías ejemplo
-const categoriasGasto = ['Comida', 'Transporte', 'Entretenimiento', 'Salud', 'Ropa'];
-const categoriasIngreso = ['Sueldo', 'Venta', 'Regalo', 'Intereses', 'Otro'];
-const categoriasAhorro = ['Banco', 'Inversión', 'Guardado', 'Fondo emergencia', 'Caja chica'];
-
-const formasDePago = ['Efectivo', 'Tarjeta', 'Transferencia'];
-
-const generarFecha = (year, month, dayOffset) => {
-  const day = String(1 + dayOffset).padStart(2, '0');
-  return `${year}-${String(month).padStart(2, '0')}-${day}`;
-};
-
-export const cargarTransaccionesFicticias = async (userId) => {
-  const inicio = new Date(2024, 5); // Junio 2024
-  const fin = new Date(2025, 11);  // Diciembre 2025
-  const transacciones = {
-    gastos: [],
-    ingresos: [],
-    ahorro: []
-  };
-
-  let current = new Date(inicio);
-
-  while (current <= fin) {
-    const year = current.getFullYear();
-    const month = current.getMonth() + 1;
-
-    // Sueldo fijo en ingresos
-    transacciones.ingresos.push({
-      nombre: 'Sueldo',
-      monto: 15000,
-      fecha: generarFecha(year, month, 0),
-      categoria: 'Sueldo',
+// Generar tarjetas ficticias
+const generarTarjetasFicticias = (userId) => {
+  const tarjetas = [];
+  // 5 de débito
+  bancos.forEach((banco, idx) => {
+    tarjetas.push({
+      banco: banco.nombre,
+      logo: banco.logo,
+      terminacion: String(Math.floor(1000 + Math.random() * 9000)),
+      vence: `0${(idx+1)%12+1}/2${8+idx}`,
+      tipo: 'Débito',
+      principal: idx === 0, // La primera es principal
       userId,
     });
-
-    for (let i = 1; i <= 4; i++) {
-      // Gastos
-      transacciones.gastos.push({
-        nombre: categoriasGasto[i % 5],
-        monto: Math.floor(Math.random() * 1000) + 100,
-        fecha: generarFecha(year, month, i),
-        formaPago: formasDePago[i % 3],
-        categoria: categoriasGasto[i % 5],
-        userId,
-      });
-
-      // Ingresos adicionales
-      transacciones.ingresos.push({
-        nombre: categoriasIngreso[i % 5],
-        monto: Math.floor(Math.random() * 2000) + 500,
-        fecha: generarFecha(year, month, i + 1),
-        categoria: categoriasIngreso[i % 5],
-        userId,
-      });
-
-      // Ahorro
-      transacciones.ahorro.push({
-        nombre: categoriasAhorro[i % 5],
-        monto: Math.floor(Math.random() * 3000) + 300,
-        fecha: generarFecha(year, month, i + 2),
-        categoria: categoriasAhorro[i % 5],
-        userId,
-      });
-    }
-
-    // Avanza al siguiente mes
-    current.setMonth(current.getMonth() + 1);
+  });
+  // 5 de crédito
+  bancos.forEach((banco, idx) => {
+    tarjetas.push({
+      banco: banco.nombre,
+      logo: banco.logo,
+      terminacion: String(Math.floor(1000 + Math.random() * 9000)),
+      vence: `1${(idx+1)%12+1}/2${9+idx}`,
+      tipo: 'Crédito',
+      principal: idx === 0, // La primera es principal
+      userId,
+    });
+  });
+  return tarjetas;
+};
+// Cargar tarjetas ficticias en Firebase
+export const cargarTarjetasFicticias = async (userId) => {
+  const tarjetas = generarTarjetasFicticias(userId);
+  const coleccion = collection(db, 'tarjetas');
+  for (const t of tarjetas) {
+    await addDoc(coleccion, t);
   }
-
-  // Subir a Firebase
-  for (const tipo in transacciones) {
-    const coleccion = collection(db, tipo);
-    for (const t of transacciones[tipo]) {
-      await addDoc(coleccion, t);
-    }
-  }
-
-  console.log('✅ Transacciones ficticias cargadas');
+  console.log('✅ Tarjetas ficticias cargadas');
 };

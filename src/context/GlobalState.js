@@ -42,6 +42,31 @@ const obtenerPresupuesto = async (userId, mesSeleccionado, rangoFechas) => {
   }
 };
 
+// Función para obtener las tarjetas guardadas en Firebase
+const obtenerTarjetas = async (userId) => {
+  try {
+    if (!userId) {
+      throw new Error("🚨 userId es obligatorio para obtener las tarjetas.");
+    }
+
+    const tarjetasQuery = query(
+      collection(db, "tarjetas"),
+      where("userId", "==", userId)
+    );
+
+    const tarjetasSnapshot = await getDocs(tarjetasQuery);
+    const tarjetas = tarjetasSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return tarjetas;
+  } catch (error) {
+    console.error("🚨 Error al obtener tarjetas:", error);
+    return [];
+  }
+};
+
 // Función para obtener las transacciones del mes
 const obtenerTransaccionesMes = async (userId, mesSeleccionado, rangoFechas) => {
   try {
@@ -84,6 +109,7 @@ export const GlobalProvider = ({ children }) => {
   const { user } = useAuth();
   const { mesSeleccionado, rangoFechas } = useMonth();
   const [presupuestoFijo, setPresupuestoFijo] = useState(0);
+  const [tarjetas, setTarjetas] = useState([]);
 
   // Función para cargar las transacciones desde Firebase
   useEffect(() => {
@@ -116,6 +142,16 @@ export const GlobalProvider = ({ children }) => {
 
     fetchTransacciones();
   }, [user, mesSeleccionado, rangoFechas]);
+
+  // Función para cargar tarjetas desde Firebase
+  useEffect(() => {
+    const fetchTarjetas = async () => {
+      if (!user?.uid) return;
+      const tarjetasGuardadas = await obtenerTarjetas(user.uid);
+      setTarjetas(tarjetasGuardadas);
+    };
+    fetchTarjetas();
+  }, [user]);
 
   // Función para cargar el presupuesto desde Firebase
   useEffect(() => {
@@ -193,6 +229,8 @@ export const GlobalProvider = ({ children }) => {
         error: state.error,
         mesAnterior: state.mesAnterior,
         presupuestoFijo,
+        tarjetas,
+        user,
         addTransaction,
         deleteTransaction,
         handleSaveExpense
