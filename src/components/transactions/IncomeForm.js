@@ -1,6 +1,6 @@
-import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
 
-const IncomeForm = forwardRef(({ handleSaveExpense }, ref) => {
+const IncomeForm = forwardRef(({ handleSaveExpense, initialData = null, modo = 'crear' }, ref) => {
   const [nombre, setNombre] = useState('');
   const [monto, setMonto] = useState('');
   const [fecha, setFecha] = useState('');
@@ -9,6 +9,16 @@ const IncomeForm = forwardRef(({ handleSaveExpense }, ref) => {
 
   const formRef = useRef();
   const submitPromiseRef = useRef();
+
+  useEffect(() => {
+    if (initialData && modo === 'editar') {
+      setNombre(initialData.nombre || '');
+      setMonto(initialData.monto || '');
+      setFecha(initialData.fecha || '');
+      setCategoria(initialData.categoria || '');
+      setNotas(initialData.notas || '');
+    }
+  }, [initialData, modo]);
 
   useImperativeHandle(ref, () => ({
     submitForm: () => {
@@ -34,7 +44,8 @@ const IncomeForm = forwardRef(({ handleSaveExpense }, ref) => {
       return;
     }
 
-    const nuevaTransaccion = {
+    const transaccion = {
+      ...(initialData || {}),
       nombre,
       fecha,
       monto: parseFloat(monto),
@@ -44,7 +55,7 @@ const IncomeForm = forwardRef(({ handleSaveExpense }, ref) => {
     };
 
     try {
-      await handleSaveExpense(nuevaTransaccion, 'ingresos');
+      await handleSaveExpense(transaccion, 'ingresos', modo);
       setNombre('');
       setMonto('');
       setFecha('');

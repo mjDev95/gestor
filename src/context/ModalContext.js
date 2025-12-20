@@ -4,7 +4,7 @@ const ModalContext = createContext();
 
 export const ModalProvider = ({ children }) => {
   // Estado para el modal global
-  // tipo: 'transaccion', 'tarjeta', etc.
+  // tipo: 'crear-transaccion', 'editar-transaccion', 'eliminar-transaccion', etc.
   // props: props adicionales para el contenido del modal
   const [modal, setModal] = useState({ open: false, tipo: null, props: {} });
 

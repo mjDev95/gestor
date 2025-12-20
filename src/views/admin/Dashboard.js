@@ -30,12 +30,11 @@ const Dashboard = () => {
 
   return (
     <DashboardProvider>
-      <div className="px-0 container-fluid">
-        <div className={`d-flex flex-column flex-md-row gap-1 dashboard-container position-relative vh-100 overflow-hidden app ${showPerfil ? 'active' : ''}`}>
-          <SideBar handleLogout={handleLogoutClick} user={user} />
-          <ContentDash />
-        </div>
+      <div className={`d-flex flex-column flex-md-row gap-1 dashboard-container dvh-100 app ${showPerfil ? 'active' : ''}`}>
+        <SideBar handleLogout={handleLogoutClick} user={user} variant="desktop" />
+        <ContentDash />
       </div>
+      <SideBar handleLogout={handleLogoutClick} user={user} variant="mobile" />
     </ DashboardProvider>
   );
 };

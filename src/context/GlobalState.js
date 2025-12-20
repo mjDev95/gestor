@@ -1,7 +1,7 @@
 import React, { createContext, useReducer, useContext, useEffect, useState } from 'react';
 import transactionReducer from './transactionReducer';
 import { db } from '../db/firebase-config';
-import { collection, getDocs, addDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 import { useMonth  } from './monthContext'; 
 import { getRangoPeriodo } from '../utils/formatDate';
@@ -187,8 +187,33 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  // Función para actualizar una transacción
+  const updateTransaction = async (transaction, tipo) => {
+    try {
+      if (!transaction.id) {
+        throw new Error('🚨 No se puede editar una transacción sin ID');
+      }
+
+      const ref = doc(db, tipo, transaction.id);
+
+      const { id, ...data } = transaction;
+
+      await updateDoc(ref, {
+        ...data,
+        userId: user.uid
+      });
+
+      dispatch({
+        type: 'UPDATE_TRANSACTION',
+        payload: transaction
+      });
+    } catch (error) {
+      console.error('Error al actualizar transacción:', error);
+    }
+  };
+
   // Función para manejar el guardado de un gasto/ingreso
-  const handleSaveExpense = async (formData, tipo) => {
+  const handleSaveExpense = async (formData, tipo, modo = 'crear') => {
     if (!formData.nombre || !formData.monto) {
       alert("Por favor, complete todos los campos.");
       return;
@@ -196,13 +221,16 @@ export const GlobalProvider = ({ children }) => {
 
     const transaccion = {
       ...formData,
-      tipo, // "gasto" o "ingreso"
+      tipo,
       userId: user.uid,
     };
 
     try {
-      await addTransaction(transaccion, tipo);
-      // El cierre del modal ahora lo maneja el componente que llama a esta función
+      if (modo === 'editar') {
+        await updateTransaction(transaccion, tipo);
+      } else {
+        await addTransaction(transaccion, tipo);
+      }
     } catch (error) {
       alert("Hubo un error al guardar la transacción.");
     }
@@ -233,7 +261,8 @@ export const GlobalProvider = ({ children }) => {
         user,
         addTransaction,
         deleteTransaction,
-        handleSaveExpense
+        handleSaveExpense,
+        updateTransaction
       }}
     >
       {children}

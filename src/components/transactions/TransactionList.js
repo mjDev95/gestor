@@ -27,7 +27,7 @@ const TransactionList = ({ view = "resumen" }) => {
 
   const { transactions, loading, error } = useGlobalState();
   const { mesSeleccionado, rangoFechas } = useMonth();
-  const { handleSaveExpense, user } = useGlobalState();
+  const { handleSaveExpense, deleteTransaction, user } = useGlobalState();
   const { setActiveSection } = useDashboard();
   const { openModal } = useModal();
   const [activeTab, setActiveTab] = useState(() => {
@@ -52,10 +52,19 @@ const TransactionList = ({ view = "resumen" }) => {
 
   // Handlers para editar/eliminar (puedes implementar la lógica real)
   const handleEdit = (transaction) => {
-    openModal('editar', { transaction });
+    openModal('editar-transaccion', {
+      transaction,
+      tipo: transaction.tipo, 
+      handleSaveExpense,
+      user
+    });
   };
   const handleDelete = (transaction) => {
-    openModal('eliminar', { transaction });
+    openModal('eliminar-transaccion', {
+      transaction,
+      tipo: transaction.tipo,
+      handleDeleteTransaction: deleteTransaction
+    });
   };
 
   // Definir tabs antes de usar useSwipeTabs
@@ -87,12 +96,12 @@ const TransactionList = ({ view = "resumen" }) => {
   }
 
   return (
-    <motion.div layoutId="transaction-panel" className={`transactions-list rounded ${isDetalle ? "vh-100 d-flex flex-column is-detalle p-0 pt-4" : "p-4"}`} layout transition={{ duration: 0.3, ease: "easeInOut" }}>
+    <motion.div layoutId="transaction-panel" className={`mt-2 mt-lg-0 transactions-list rounded ${isDetalle ? "vh-100 d-flex flex-column is-detalle p-0 pt-4" : "p-4 mt-2"}`} layout transition={{ duration: 0.3, ease: "easeInOut" }}>
       <div className={`d-flex justify-content-between align-items-center mb-4 ${isDetalle ? "px-3" : ""}`} >
         <h2 className="text-start mb-0">
           {isDetalle ? "Movimientos" : "Transacciones recientes"}
         </h2>
-        <button className="btn btn-primary rounded px-5 ms-auto me-lg-0 btn-list" onClick={() => isDetalle ? openModal("transaccion", { handleSaveExpense, user }) : setActiveSection("transacciones") } >
+        <button className="btn btn-primary rounded px-lg-5 ms-auto me-lg-0 btn-list" onClick={() => isDetalle ? openModal("transaccion", { handleSaveExpense, user }) : setActiveSection("transacciones") } >
           {isDetalle ? ( <> Agregar <Plus size={20} /> </> ) : ( "Ver todas" )}
         </button>
       </div>

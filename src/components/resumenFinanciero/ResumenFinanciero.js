@@ -69,7 +69,7 @@ const ResumenFinanciero = () => {
     : null;
 
   return (
-    <div className="row resumen-financiero justify-content-between align-items-stretch">
+    <div className="row g-2 g-lg-4 resumen-financiero justify-content-between align-items-stretch">
       {resumen.map((item, index) => {
         const { Icon, valor, previo } = item;
         const variacion = calcularVariacion(valor, previo);
@@ -77,8 +77,8 @@ const ResumenFinanciero = () => {
         const colorClase = aumento ? "text-success" : "text-danger";
 
         return (
-          <div key={index} className="col-xxl-3 col-6 mb-4">
-            <div className={`d-flex flex-column justify-content-between p-3 p-md-4 rounded border-0 h-100 resumen-card ${item.clase}`}>
+          <div key={index} className="col-xxl-3 col-6 mb-0 mb-xxl-4">
+            <div className={`d-flex flex-column justify-content-between p-3 p-md-4 rounded border-0 h-100 resumen-card position-relative ${item.clase}`}>
               <div className="d-flex flex-row align-items-center gap-2">
                 <div className="icon-stage d-flex justify-content-center align-items-center rounded-3">
                   <Icon size={16} className="text-primary" />
@@ -86,7 +86,7 @@ const ResumenFinanciero = () => {
                 <div className="w-100 d-flex justify-content-between align-items-center my-2">
                   <div>
                     <h5 className="card-title fw-light h6 mb-1">{item.titulo}</h5>
-                    <p className="card-text resumen-valor h4 mb-0 ">
+                    <p className="card-text resumen-valor h5 mb-0 ">
                       ${formatAmount(item.valor)}
                     </p>
                     <p className="d-none card-text resumen-valor h6 mb-0">
@@ -95,9 +95,9 @@ const ResumenFinanciero = () => {
                         : "Periodo anterior no disponible"}
                     </p>
                   </div>
-                  <div className="ms-auto mt-auto me-0">
+                  <div className="position-absolute top-0 end-0 m-2">
                     {item.titulo !== "Saldo disponible" && (
-                      <small className={`badge-resumen rounded-3 px-2 fw-normal d-flex align-items-center gap-1 ${colorClase}`}>
+                      <small className={`badge-resumen rounded-5 px-2 fw-normal d-flex align-items-center ${colorClase}`}>
                         {variacion === 0 ? "0%" : `${variacion > 0 ? "+" : ""}${variacion}%`}
                       </small>
                     )}

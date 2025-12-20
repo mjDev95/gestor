@@ -33,6 +33,25 @@ const transactionReducer = (state, action) => {
             .sort((a, b) => new Date(b.fecha) - new Date(a.fecha)),
         },
       };
+    case 'UPDATE_TRANSACTION':
+      return {
+        ...state,
+        transactions: {
+          ...state.transactions,
+          actual: (state.transactions.actual || [])
+            .map((transaction) =>
+              transaction.id === action.payload.id
+                ? action.payload
+                : transaction
+            )
+            .sort((a, b) => new Date(b.fecha) - new Date(a.fecha)),
+          previo: (state.transactions.previo || []).map((transaction) =>
+            transaction.id === action.payload.id
+              ? action.payload
+              : transaction
+          ),
+        },
+      };
     case 'DELETE_TRANSACTION':
       return {
         ...state,

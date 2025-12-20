@@ -1,4 +1,5 @@
 import { useDashboard } from "../../context/dashboardContext";
+import { useEffect, useRef } from "react";
 import Inicio from "../../components/inicio/Inicio";
 import Tarjetas from "../../components/tarjetas/Tarjetas";
 import Maintenance from "../support/Maintenance";
@@ -19,10 +20,22 @@ const sections = {
 
 function ContentDash() {
   const { activeSection } = useDashboard();
-  const ActiveComponent = sections[activeSection] || Inicio; 
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    // reset vertical scroll to top when activeSection changes
+    try {
+      el.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    } catch (e) {
+      el.scrollTop = 0;
+    }
+  }, [activeSection]);
+  const ActiveComponent = sections[activeSection] || Inicio;
 
   return (
-    <div className="content-dash overflow-y-scroll overflow-x-hidden d-flex flex-column flex-md-fill order-0 order-md-1">
+    <div ref={containerRef} className="content-dash overflow-y-scroll h-100 overflow-x-hidden d-flex flex-column flex-md-fill order-0 order-md-1">
       <SaludoUsuario />
       <DashboardHeader />
       <ActiveComponent />

@@ -1,3 +1,4 @@
+// Modal global reutilizable para crear y editar transacciones (gastos, ingresos, ahorros)
 import { useEffect, useRef, useState } from "react";
 import { useModal } from "../../context/ModalContext";
 import ExpenseForm from "../transactions/ExpenseForm";
@@ -7,7 +8,12 @@ import { Check, ExclamationCircle, XLg } from "react-bootstrap-icons";
 import { showBackdrop, showModal, hideModal, hideBackdrop, morphToCircle, morphToRect, bounceCheck, shakeButton, showErrorMsg, } from "../../utils/gsapAnimations";
 import { useSwipeTabs } from "../../hooks/useSwipeTabs";
 
+// GlobalModal
+// Este componente escucha el estado global del modal (ModalContext)
+// y renderiza dinámicamente el contenido según `modal.tipo`
 const GlobalModal = () => {
+  // Referencias a elementos del DOM y formularios
+  // Se usan para animaciones, submit manual y control del modal
   const { modal, closeModal } = useModal();
   const backdropRef = useRef(null);
   const modalRef = useRef(null);
@@ -15,6 +21,11 @@ const GlobalModal = () => {
   const btnGuardarRef = useRef(null);
   const errorMsgRef = useRef(null);
 
+  // Estados locales del modal:
+  // - isVisible: controla renderizado con animaciones
+  // - activeTab: tab actualmente activa
+  // - errorForm: mensaje de error del formulario
+  // - guardado / guardando / morphing: control visual del botón Guardar
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("gasto");
   const [errorForm, setErrorForm] = useState("");
@@ -22,6 +33,9 @@ const GlobalModal = () => {
   const [guardando, setGuardando] = useState(false);
   const [morphing, setMorphing] = useState(false);
 
+  // Cuando el modal se abre:
+  // - Se muestra el backdrop
+  // - Se ejecuta la animación de entrada del modal
   useEffect(() => {
     if (modal.open) {
       setIsVisible(true);
@@ -30,6 +44,8 @@ const GlobalModal = () => {
     }
   }, [modal.open]);
 
+  // Cierra el modal con animaciones
+  // Limpia estados internos y resetea el contexto del modal
   const handleClose = () => {
     hideModal(modalRef);
     hideBackdrop(backdropRef, () => {
@@ -42,7 +58,11 @@ const GlobalModal = () => {
     });
   };
 
-  const handleSave = async () => {
+  // Maneja el flujo completo del botón Guardar:
+  // - Ejecuta animaciones
+  // - Llama al submit del formulario activo
+  // - Muestra éxito o error según el resultado
+  let handleSave = async () => {
     if (formRef.current && formRef.current.submitForm) {
       setErrorForm("");
       setMorphing(true);
@@ -82,6 +102,9 @@ const GlobalModal = () => {
     }
   };
 
+  // Cancela la acción actual:
+  // - Resetea el formulario si existe
+  // - Cierra el modal
   const handleCancel = () => {
     if (formRef.current && formRef.current.resetForm) {
       formRef.current.resetForm();
@@ -89,12 +112,22 @@ const GlobalModal = () => {
     handleClose();
   };
 
+  // Variables dinámicas que se definen según el tipo de modal:
+  // - modalTitle: título del modal
+  // - tabs: configuración de tabs
+  // - activeTabData: contenido del tab activo
   let modalTitle = "Modal";
   let tabs = null;
   let activeTabData = null;
 
+  // Decide qué mostrar dentro del modal según el tipo:
+  // - "transaccion": agregar nueva transacción
+  // - "editar-transaccion": editar una transacción existente
   switch (modal.tipo) {
     case "transaccion":
+      // Modo CREAR:
+      // Tabs libres (Gasto / Ingreso / Ahorro)
+      // El usuario puede elegir el tipo de transacción
       modalTitle = "Agregar transacción";
       tabs = [
         {
@@ -115,13 +148,109 @@ const GlobalModal = () => {
       ];
       activeTabData = tabs.find(tab => tab.key === activeTab);
       break;
+    case "editar-transaccion": {
+      // Modo EDITAR:
+      // - Detecta el tipo real de la transacción
+      // - Activa automáticamente la tab correcta
+      // - Deshabilita las demás para evitar cambiar el tipo
+      const { transaction } = modal.props;
+
+      const tipoTab =
+        transaction?.tipo === "ingresos"
+          ? "ingreso"
+          : transaction?.tipo === "ahorro"
+          ? "ahorro"
+          : "gasto";
+
+      modalTitle = "Editar transacción";
+
+      tabs = [
+        {
+          key: "gasto",
+          label: "Gasto",
+          disabled: tipoTab !== "gasto",
+          content: (
+            <ExpenseForm
+              ref={formRef}
+              initialData={transaction}
+              modo="editar"
+              handleSaveExpense={modal.props.handleSaveExpense}
+            />
+          )
+        },
+        {
+          key: "ingreso",
+          label: "Ingreso",
+          disabled: tipoTab !== "ingreso",
+          content: (
+            <IncomeForm
+              ref={formRef}
+              initialData={transaction}
+              modo="editar"
+              handleSaveExpense={modal.props.handleSaveExpense}
+            />
+          )
+        },
+        {
+          key: "ahorro",
+          label: "Ahorro",
+          disabled: true,
+          content: <div>Próximamente...</div>
+        }
+      ];
+
+      setTimeout(() => setActiveTab(tipoTab), 0);
+      activeTabData = tabs.find(tab => tab.key === tipoTab);
+      break;
+    }
+    case "eliminar-transaccion": {
+      const { transaction, tipo, handleDeleteTransaction } = modal.props;
+
+      modalTitle = "Eliminar transacción";
+
+      tabs = null;
+
+      activeTabData = {
+        content: (
+          <div className="text-center py-4">
+            <p className="mb-3">
+              ¿Estás seguro de que deseas eliminar esta transacción?
+            </p>
+            <strong>{transaction.nombre}</strong>
+            
+          </div>
+        )
+      };
+
+      // Sobrescribimos el comportamiento del botón Guardar
+      // para que ejecute el eliminado
+      const originalHandleSave = handleSave;
+
+      handleSave = async () => {
+        try {
+          setGuardando(true);
+          await handleDeleteTransaction(transaction.id, tipo);
+          setGuardado(true);
+          setTimeout(() => handleClose(), 600);
+        } catch (error) {
+          setErrorForm("No se pudo eliminar la transacción.");
+        }
+      };
+
+      break;
+    }
     default:
       break;
   }
+  // Hook para permitir swipe entre tabs (mobile / desktop)
+  // Respeta tabs deshabilitadas
   const { handleStart, handleEnd } = useSwipeTabs({ tabs, activeTab, setActiveTab });
 
+  // Evita renderizar el modal si está completamente cerrado
   if (!modal.open && !isVisible) return null;
 
+  // Renderizado del modal:
+  // Incluye backdrop, header con tabs, body dinámico y footer con botón Guardar
   return (
     <div className="modal fade show d-block" tabIndex="-1">
       <div className="modal-overlay position-absolute top-0 start-0 w-100 h-100" ref={backdropRef} onClick={handleClose} ></div>
@@ -159,7 +288,7 @@ const GlobalModal = () => {
             <button
               type="button"
               ref={btnGuardarRef}
-              className={`btn m-0 py-0 morph-btn ${guardado ? "btn-success" : errorForm ? "btn-danger" : "btn-primary"}`}
+              className={`btn m-0 py-0 morph-btn ${ guardado ? "btn-success" : errorForm || modal.tipo === "eliminar-transaccion" ? "btn-danger" : "btn-primary" }`}
               onClick={handleSave}
               disabled={guardando || guardado || morphing || !!errorForm}
               style={{
@@ -180,7 +309,7 @@ const GlobalModal = () => {
                   <span className="flex-grow-1">{errorForm}</span>
                 </div>
               ) : (
-                "Guardar"
+                modal.tipo === "eliminar-transaccion" ? "Eliminar" : "Guardar"
               )}
             </button>
           </div>

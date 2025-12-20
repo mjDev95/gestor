@@ -151,6 +151,11 @@ body, p, li {
   cursor: grab;
   user-select: none;
 }
+.dvh-100 {
+  height: 100vh;   
+  height: 100dvh; 
+}
+
 /*--------------------------------------------------------------
 SIDEBAR
 --------------------------------------------------------------*/
@@ -179,13 +184,13 @@ SIDEBAR
 Modal
 --------------------------------------------------------------*/
   .modal-overlay{
-    z-index: 1;
+    z-index: 1023;
     backdrop-filter: blur(13px);
     -webkit-backdrop-filter: blur(13px);
   }
   .modal{
     .modal-dialog {
-      z-index: 1;
+      z-index: 1024;
     }
   }
 
@@ -223,7 +228,7 @@ Lateral
   top: 0;
   height: 100vh;
   background: var(--color-main);
-  z-index: 100;
+  z-index: 1031;
   transform: translate(calc(100% + 6vw), 0) rotate(0.001deg);
   transition: transform .8s cubic-bezier(.7, 0, .2, 1);
   will-change: transform;
@@ -317,9 +322,21 @@ SIDEBAR
 --------------------------------------------------------------*/
 .col-sidebar {
   position: relative;
-  z-index: 1020;
+  z-index: 1022;
   background-color: var(--modo-oscuro);
+
+  @media (max-width: 576px) {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    &.sidebar-mobile {
+      height: 56px;
+    }
+  }
 }
+
+
 
 .btn.btn-sidebar {
   height: 60px;
@@ -398,7 +415,9 @@ img{
     width: 100%;
     transform: translate(calc(100% + 20vw), 0) rotate(0.001deg);
   }
-
+  .content-dash {
+    padding-bottom: 56px; 
+  }
   .fixed-nav-rounded-div {
     .content-rounded {
       width: 20vw;
