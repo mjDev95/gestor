@@ -27,12 +27,7 @@ const DashboardHeader = () => {
 
   return (
     <div className={`${isVisible ? "d-block" : "d-none"}`}>
-      <motion.div
-        className="row file-tabs sticky-top align-items-center g-0 px-3 pt-4 py-md-0"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-      >
+      <div className="row file-tabs sticky-top align-items-center g-0 px-3 pt-4 py-md-0">
         <div className="col-md-3">
           <PeriodoActualLabel />
         </div>
@@ -40,9 +35,8 @@ const DashboardHeader = () => {
         <div className="col-md-6 ms-md-auto">
           <SelectorMeses />
         </div>
-
         <div className="col-lg-1">{/* Espacio reservado para contenido futuro */}</div>
-      </motion.div>
+      </div>
     </div>
   );
 };

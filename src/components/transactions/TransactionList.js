@@ -1,6 +1,5 @@
 import React , { useState } from 'react';
 import { useGlobalState } from '../../context/GlobalState';
-import { motion } from "framer-motion";
 import { Plus } from 'react-bootstrap-icons';
 import { useMonth } from '../../context/monthContext'; 
 import { getRangoPeriodo } from '../../utils/formatDate';
@@ -96,7 +95,7 @@ const TransactionList = ({ view = "resumen" }) => {
   }
 
   return (
-    <motion.div layoutId="transaction-panel" className={`mt-2 mt-lg-0 transactions-list rounded ${isDetalle ? "vh-100 d-flex flex-column is-detalle p-0 pt-4" : "p-4 mt-2"}`} layout transition={{ duration: 0.3, ease: "easeInOut" }}>
+    <div layoutId="transaction-panel" className={`mt-2 mt-lg-0 transactions-list rounded ${isDetalle ? "vh-100 d-flex flex-column is-detalle p-0 pt-4" : "p-4 mt-2"}`} layout transition={{ duration: 0.3, ease: "easeInOut" }}>
       <div className={`d-flex justify-content-between align-items-center mb-4 ${isDetalle ? "px-3" : ""}`} >
         <h2 className="text-start mb-0">
           {isDetalle ? "Movimientos" : "Transacciones recientes"}
@@ -111,7 +110,7 @@ const TransactionList = ({ view = "resumen" }) => {
         {(tabs.find(tab => tab.key === activeTab)?.content) || tabs[0].content}
       </div>
     
-    </motion.div>
+    </div>
   );
 };
 

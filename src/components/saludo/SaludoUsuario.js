@@ -14,14 +14,9 @@ const SaludoUsuario = () => {
 
     return (
           <div className={`${isVisible ? "d-block" : "d-none"}`}>
-            <motion.div
-              className="saludo-usuario mt-5 mb-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
-            >
+            <div className="saludo-usuario mt-5 mb-3">
               <h2 className="saludo-text">Hola, {firstName}</h2>
-            </motion.div>
+            </div>
           </div>
     );
 };
