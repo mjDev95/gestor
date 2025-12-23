@@ -30,6 +30,7 @@ VARIABLES CSS
   --color-second: #FF2257;
   --texto-principal: #293951;
   --texto-secundario: #95aac9;
+  --modo-border: #E4E4E4;
   /*========== Font and typography ==========*/
   --font-content: 'main', sans-serif;
   --font-titles: 'bolds', sans-serif;
@@ -49,6 +50,7 @@ html.dark {
   --color-second: #FF99A1;
   --texto-principal: #ffffff;
   --texto-secundario: #A1A1A1;
+  --modo-border: rgb(228 228 228 / 10%);
 }
 
 /*--------------------------------------------------------------
@@ -324,14 +326,17 @@ SIDEBAR
   position: relative;
   z-index: 1022;
   background-color: var(--modo-oscuro);
-
   @media (max-width: 576px) {
     position: fixed !important;
     bottom: 0;
     left: 0;
     right: 0;
     &.sidebar-mobile {
-      height: 56px;
+      height: 65px;
+      border-top: 1px solid var(--modo-border);
+      .small, small {
+          font-size: 12px;
+      }
     }
   }
 }
@@ -342,10 +347,26 @@ SIDEBAR
   height: 60px;
   width: 60px;
   border-radius: 50%;
-  color: var(--texto-principal);
   border: 0px;
-  background-color: var(--modo-claro);
+  color: var(--texto-principal);
+  &.active {
+    color: var(--color-main) !important;
+  }
+  &.add {
+    transform: translateX(-150%);
+    background-color: var(--color-main);
+    z-index: 1035 !important;
+  }
+  @media(max-width: 576px) {
+    &.add {
+      margin-bottom: 90px !important;
+    }
+  }
+  @media (min-width: 576px) {
+    background-color: var(--modo-claro);
+  }
 }
+
 .btn.btn-sidebar.dropdown-toggle::after {
   content: none !important; 
 }
@@ -416,7 +437,7 @@ img{
     transform: translate(calc(100% + 20vw), 0) rotate(0.001deg);
   }
   .content-dash {
-    padding-bottom: 56px; 
+    margin-bottom: 60px;
   }
   .fixed-nav-rounded-div {
     .content-rounded {

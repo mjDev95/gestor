@@ -3,7 +3,6 @@ import SelectorMeses from "../meses/SelectorMeses";
 import { useMonth } from "../../context/monthContext";
 import { useMeses } from "../../hooks/useMeses";
 import { getRangoPeriodo } from "../../utils/formatDate";
-import { useDashboard } from "../../context/dashboardContext";
 
 function PeriodoActualLabel() {
   const { meses } = useMeses();
@@ -21,13 +20,10 @@ function PeriodoActualLabel() {
 }
 
 const DashboardHeader = () => {
-  const { activeSection } = useDashboard();
-
-  const isVisible = activeSection === "inicio";
 
   return (
-    <div className={`${isVisible ? "d-block" : "d-none"}`}>
-      <div className="row file-tabs sticky-top align-items-center g-0 px-3 pt-4 py-md-0">
+    <div className={``}>
+      <div className="row file-tabs sticky-top align-items-center g-0 px-3 pt-4 py-md-0" style={{height: '150px'}}>
         <div className="col-md-3">
           <PeriodoActualLabel />
         </div>

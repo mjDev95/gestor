@@ -1,5 +1,22 @@
 import gsap from "gsap";
 
+
+export const animateSidebarIndicator = (indicatorEl, activeButtonEl) => {
+  if (!indicatorEl || !activeButtonEl) return;
+
+  // Obtener posición del botón activo y su contenedor
+  const buttonRect = activeButtonEl.getBoundingClientRect();
+  const containerRect = activeButtonEl.parentElement.getBoundingClientRect();
+
+  // Animar el indicador con GSAP
+  gsap.to(indicatorEl, {
+    x: buttonRect.left - containerRect.left, // Desplazamiento horizontal
+    width: buttonRect.width,                 // Ancho igual al del botón
+    duration: 0.4,
+    ease: "power3.out",
+  });
+};
+
 // Animación del indicador de tabs
 export const animateTabIndicator = (indicatorEl, activeButtonEl) => {
   if (!indicatorEl || !activeButtonEl) return;

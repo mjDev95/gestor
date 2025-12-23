@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import TarjetasSwiper from "./TarjetasSwiper";
 import DonutComparativoTarjetas from "./DonutComparativoTarjetas";
 import "./DonutComparativoTarjetas.scss";
@@ -7,8 +8,14 @@ import "./TarjetasSwiper.scss";
 
 function Tarjetas() {
   const { tarjetas, transactions } = useGlobalState();
+
   return (
-    <main layoutId="tarjetas-panel" layout transition={{ duration: 0.3, ease: "easeInOut" }} className="p-3 content-info">
+    <motion.main
+      layout
+      layoutId="tarjetas-panel"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="p-3 content-info"
+    >
       <div className="container-fluid">
         <div className="row mb-4 align-items-center">
           <div className="col">
@@ -21,10 +28,14 @@ function Tarjetas() {
             </button>
           </div>
         </div>
+
         <TarjetasSwiper />
-        <DonutComparativoTarjetas tarjetas={tarjetas} transacciones={transactions.actual} />
+        <DonutComparativoTarjetas
+          tarjetas={tarjetas}
+          transacciones={transactions.actual}
+        />
       </div>
-    </main>
+    </motion.main>
   );
 }
 

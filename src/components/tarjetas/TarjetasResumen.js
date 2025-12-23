@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useGlobalState } from '../../context/GlobalState';
 import { useDashboard } from '../../context/dashboardContext';
 
@@ -10,7 +11,12 @@ const TarjetasResumen = ({ className = '' }) => {
   const primeraDos = tarjetas.slice(0, 2);
 
   return (
-    <div className={`resumen-card p-3 mb-lg-4 rounded mt-2 mt-lg-4 mt-xxl-0 ${className}`}>
+    <motion.div
+      layout
+      layoutId="tarjetas-panel"
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className={`resumen-card p-3 mb-lg-4 rounded mt-2 mt-lg-4 mt-xxl-0 ${className}`}
+    >
       <div className="d-flex align-items-start justify-content-between mb-2">
         <div>
           <h5 className="mb-1">Tarjetas</h5>
@@ -61,7 +67,7 @@ const TarjetasResumen = ({ className = '' }) => {
           Ver tarjetas
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

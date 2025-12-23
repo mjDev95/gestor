@@ -9,6 +9,7 @@ import Tabs from "../tabs/Tabs";
 import {useSwipeTabs } from '../../hooks/useSwipeTabs';
 import TransactionListMobile from './TransactionListMobile';
 import TransactionListDesktop from './TransactionListDesktop';
+import { motion } from "framer-motion";
 
 import  './TransactionList.scss'; 
 
@@ -95,7 +96,7 @@ const TransactionList = ({ view = "resumen" }) => {
   }
 
   return (
-    <div layoutId="transaction-panel" className={`mt-2 mt-lg-0 transactions-list rounded ${isDetalle ? "vh-100 d-flex flex-column is-detalle p-0 pt-4" : "p-4 mt-2"}`} layout transition={{ duration: 0.3, ease: "easeInOut" }}>
+    <motion.div layoutId="transaction-panel" className={`mt-2 mt-lg-0 transactions-list rounded ${isDetalle ? "vh-100 d-flex flex-column is-detalle p-0 pt-4" : "p-4 mt-2"}`} layout transition={{ duration: 0.3, ease: "easeInOut" }}>
       <div className={`d-flex justify-content-between align-items-center mb-4 ${isDetalle ? "px-3" : ""}`} >
         <h2 className="text-start mb-0">
           {isDetalle ? "Movimientos" : "Transacciones recientes"}
@@ -109,8 +110,8 @@ const TransactionList = ({ view = "resumen" }) => {
       <div className={`tabs-content dragrable  ${isDetalle ? "overflow-y-auto overflow-x-hidden flex-grow-1 px-3" : "mt-3 "}`} onTouchStart={handleStart} onTouchEnd={handleEnd} onMouseDown={handleStart} onMouseUp={handleEnd}>
         {(tabs.find(tab => tab.key === activeTab)?.content) || tabs[0].content}
       </div>
-    
-    </div>
+
+    </motion.div>
   );
 };
 

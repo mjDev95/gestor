@@ -1,4 +1,6 @@
 import React from "react";
+import SaludoUsuario from "../../components/saludo/SaludoUsuario";
+import DashboardHeader from "../../components/headers/DashboardHeader";
 import ResumenFinanciero from "../../components/resumenFinanciero/ResumenFinanciero";
 import TransactionList from "../../components/transactions/TransactionList";
 import Presupuesto from "../../components/presupuesto/Presupuesto";
@@ -7,7 +9,9 @@ import TarjetasResumen from "../../components/tarjetas/TarjetasResumen";
 function Inicio() {
   return (
     <main className="p-3 content-info ">
-      {/* Contenido principal */}
+      {/* Contenido principal */}     
+      <SaludoUsuario />
+      <DashboardHeader />
       <div className="row g-2 g-lg-4">
         <div className="col-12 col-md-8">
             <ResumenFinanciero />
