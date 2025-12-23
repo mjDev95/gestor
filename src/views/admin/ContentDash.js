@@ -6,12 +6,6 @@ import Maintenance from "../support/Maintenance";
 import Transactions from "../../components/transactions/Transactions";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { Plus, GearFill, GridFill, CreditCardFill, ArrowDownUp } from 'react-bootstrap-icons';
-import { useModal } from "../../context/ModalContext";
-import { useGlobalState } from "../../context/GlobalState";
-
-/*import Configuracion from "../../components/configuracion/Configuracion";*/
-
 const sections = {
   inicio: Inicio,
   mantenimiento: Maintenance,
@@ -22,9 +16,9 @@ const sections = {
 
 function ContentDash() {
   const { activeSection } = useDashboard();
-      const { openModal } = useModal();
-      const { handleSaveExpense, user } = useGlobalState();
   const containerRef = useRef(null);
+  const lastScrollTop = useRef(0);
+  const sidebarVisible = useRef(true);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -39,8 +33,44 @@ function ContentDash() {
 
   const ActiveComponent = sections[activeSection] || Inicio;
 
+  const handleScroll = () => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const scrollTop = el.scrollTop;
+    const scrollHeight = el.scrollHeight;
+    const clientHeight = el.clientHeight;
+
+    const scrollingDown = scrollTop > lastScrollTop.current;
+    const isBottom = scrollTop + clientHeight >= scrollHeight - 5;
+
+    lastScrollTop.current = scrollTop;
+
+    console.log("🌀 dashboard scroll:", {
+      scrollTop,
+      scrollHeight,
+      clientHeight,
+      scrollingDown,
+      isBottom,
+    });
+
+    // 📡 Emitimos señal global para el sidebar móvil
+    window.dispatchEvent(
+      new CustomEvent("dashboard-scroll", {
+        detail: {
+          scrollingDown,
+          isBottom,
+          scrollTop,
+        },
+      })
+    );
+  };
+
   return (
-    <div  ref={containerRef} className="content-dash overflow-y-scroll h-100 overflow-x-hidden d-flex flex-column flex-md-fill order-0 order-md-1" >
+    <div  ref={containerRef} className="content-dash overflow-y-scroll h-100 overflow-x-hidden d-flex flex-column flex-md-fill order-0 order-md-1" 
+      onScroll={() => {
+        handleScroll();
+      }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={activeSection}
@@ -53,9 +83,6 @@ function ContentDash() {
           <ActiveComponent />
         </motion.div>
       </AnimatePresence>
-      <button className="btn btn-primary shadow-sm fixed-bottom start-100 m-3 end-0 btn-sidebar add" onClick={() => openModal("transaccion", { handleSaveExpense, user })}>
-        <Plus color="green" size={20} />
-      </button>
     </div>
   );
 }

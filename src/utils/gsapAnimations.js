@@ -1,6 +1,66 @@
 import gsap from "gsap";
 
+// Timeline base: oculta sidebar (translateY) y FAB (scale)
+export const createMobileSidebarTimeline = (sidebarEl, addBtnEl) => {
+  if (!sidebarEl || !addBtnEl) return null;
 
+  const tl = gsap.timeline({ paused: true });
+
+  tl.to(
+    sidebarEl,
+    {
+      y: "100%",
+      duration: 0.35,
+      ease: "power3.inOut",
+    },
+    0
+  ).to(
+    addBtnEl,
+    {
+      scale: 0,
+      transformOrigin: "50% 50%",
+      duration: 0.28,
+      ease: "power2.inOut",
+    },
+    0
+  );
+
+  return tl;
+};
+
+// Mostrar sidebar móvil
+export const showMobileSidebar = (tl) => {
+  if (!tl) return;
+  tl.reverse();
+  document.body.classList.remove("sidebar-hidden");
+};
+
+// Ocultar sidebar móvil
+export const hideMobileSidebar = (tl) => {
+  if (!tl) return;
+  tl.play();
+  document.body.classList.add("sidebar-hidden");
+};
+
+// Micro animación del FAB al reaparecer (solo scale)
+export const microScaleButtonIn = (btnEl) => {
+  if (!btnEl) return;
+
+  gsap.fromTo(
+    btnEl,
+    {
+      scale: 0,
+      transformOrigin: "50% 50%",
+    },
+    {
+      scale: 1,
+      duration: 0.32,
+      ease: "power3.out",
+    }
+  );
+};
+
+// Animación del indicador del sidebar móvil
 export const animateSidebarIndicator = (indicatorEl, activeButtonEl) => {
   if (!indicatorEl || !activeButtonEl) return;
 
