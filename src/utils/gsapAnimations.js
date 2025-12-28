@@ -98,10 +98,10 @@ export const animateTabIndicator = (indicatorEl, activeButtonEl) => {
 export const showBackdrop = (backdropRef) =>
   gsap.fromTo(
     backdropRef.current,
-    { opacity: 0, filter: "blur(0px)" },
+    { opacity: 0, backdropFilter: "blur(0px)" },
     {
       opacity: 1,
-      filter: "blur(13px)",
+      backdropFilter: "blur(10px)",
       duration: 0.4,
       ease: "power1.out",
     }

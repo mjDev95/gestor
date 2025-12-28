@@ -59,12 +59,6 @@ const SideBar = ({ variant = "desktop" }) => {
       } else {
         hideMobileSidebar(tlRef.current);
       }
-
-      console.log("📦 sidebar:", shouldShow ? "SHOW" : "HIDE", {
-        scrollTop,
-        isBottom,
-        scrollingDown,
-      });
     };
 
     window.addEventListener("dashboard-scroll", onDashboardScroll);

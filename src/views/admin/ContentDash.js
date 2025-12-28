@@ -46,14 +46,6 @@ function ContentDash() {
 
     lastScrollTop.current = scrollTop;
 
-    console.log("🌀 dashboard scroll:", {
-      scrollTop,
-      scrollHeight,
-      clientHeight,
-      scrollingDown,
-      isBottom,
-    });
-
     // 📡 Emitimos señal global para el sidebar móvil
     window.dispatchEvent(
       new CustomEvent("dashboard-scroll", {

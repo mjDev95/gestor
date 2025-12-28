@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useModal } from "../../context/ModalContext";
 import ExpenseForm from "../transactions/ExpenseForm";
 import IncomeForm from "../transactions/IncomeForm";
+import TarjetaForm from "../tarjetas/TarjetaForm";
 import Tabs from "../tabs/Tabs";
 import { Check, ExclamationCircle, XLg } from "react-bootstrap-icons";
 import { showBackdrop, showModal, hideModal, hideBackdrop, morphToCircle, morphToRect, bounceCheck, shakeButton, showErrorMsg, } from "../../utils/gsapAnimations";
@@ -224,8 +225,6 @@ const GlobalModal = () => {
 
       // Sobrescribimos el comportamiento del botón Guardar
       // para que ejecute el eliminado
-      const originalHandleSave = handleSave;
-
       handleSave = async () => {
         try {
           setGuardando(true);
@@ -235,6 +234,130 @@ const GlobalModal = () => {
         } catch (error) {
           setErrorForm("No se pudo eliminar la transacción.");
         }
+      };
+
+      break;
+    }
+    case "editar-tarjeta": {
+      const { tarjeta, handleSaveTarjeta } = modal.props;
+
+      modalTitle = "Editar Tarjeta";
+      tabs = null;
+
+      activeTabData = {
+        content: (
+          <TarjetaForm
+            ref={formRef}
+            initialData={tarjeta}
+            modo="editar"
+            handleSaveTarjeta={handleSaveTarjeta}
+          />
+        )
+      };
+      break;
+    }
+    case "eliminar-tarjeta": {
+      const { tarjeta, handleDeleteTarjeta } = modal.props;
+
+      modalTitle = "Eliminar Tarjeta";
+      tabs = null;
+
+      activeTabData = {
+        content: (
+          <div className="text-center py-4">
+            <p className="mb-3">
+              ¿Estás seguro de que deseas eliminar esta tarjeta?
+            </p>
+            <div className="mb-3">
+              <strong className="d-block">{tarjeta.banco}</strong>
+              <small className="text-muted">**** **** **** {tarjeta.terminacion}</small>
+            </div>
+            <div className="alert alert-warning mt-3">
+              <small>Esta acción no se puede deshacer.</small>
+            </div>
+          </div>
+        )
+      };
+
+      // Sobrescribimos el comportamiento del botón Guardar
+      // para que ejecute el eliminado
+      handleSave = async () => {
+        try {
+          setMorphing(true);
+          morphToCircle(btnGuardarRef);
+          await new Promise(res => setTimeout(res, 400));
+          
+          setGuardando(true);
+          const resultado = await handleDeleteTarjeta(tarjeta.id);
+          setGuardando(false);
+
+          if (resultado?.success) {
+            setGuardado(true);
+            bounceCheck(btnGuardarRef);
+            setTimeout(() => handleClose(), 600);
+          } else {
+            setMorphing(false);
+            morphToRect(btnGuardarRef);
+            setErrorForm(resultado?.message || "No se pudo eliminar la tarjeta.");
+            setTimeout(() => {
+              if (errorMsgRef.current) {
+                showErrorMsg(errorMsgRef);
+              }
+            }, 0);
+            shakeButton(btnGuardarRef);
+            setTimeout(() => {
+              setErrorForm("");
+            }, 4000);
+          }
+        } catch (error) {
+          setGuardando(false);
+          setMorphing(false);
+          morphToRect(btnGuardarRef);
+          setErrorForm(error.message || "Ocurrió un error al eliminar.");
+          setTimeout(() => {
+            if (errorMsgRef.current) {
+              showErrorMsg(errorMsgRef);
+            }
+          }, 0);
+          shakeButton(btnGuardarRef);
+          setTimeout(() => {
+            setErrorForm("");
+          }, 4000);
+        }
+      };
+
+      break;
+    }
+    case "tarjeta-con-transacciones": {
+      const { tarjeta, verificacion } = modal.props;
+
+      modalTitle = "No se puede eliminar";
+      tabs = null;
+
+      activeTabData = {
+        content: (
+          <div className="text-center py-4">
+            <div className="mb-4">
+              <i className="bi bi-exclamation-circle text-warning" style={{ fontSize: '3rem' }}></i>
+            </div>
+            <p className="mb-3">
+              No se puede eliminar la tarjeta:
+            </p>
+            <div className="mb-3">
+              <strong className="d-block">{tarjeta.banco}</strong>
+              <small className="text-muted">**** **** **** {tarjeta.terminacion}</small>
+            </div>
+            <div className="alert alert-warning mt-3">
+              <i className="bi bi-info-circle me-2"></i>
+              {verificacion.mensaje}
+            </div>
+          </div>
+        )
+      };
+
+      // Sobrescribimos handleSave para cerrar directamente sin animaciones
+      handleSave = () => {
+        handleCancel();
       };
 
       break;
@@ -277,8 +400,8 @@ const GlobalModal = () => {
           </div>
 
           <div className="modal-footer p-4 pt-2 border-top-0 position-relative">
-            {/* Botón Cancelar solo si no está morphing, guardando, guardado NI error */}
-            {!(morphing || guardando || guardado || errorForm) && (
+            {/* Botón Cancelar solo si no está morphing, guardando, guardado NI error Y no es modal informativo */}
+            {!(morphing || guardando || guardado || errorForm || modal.tipo === "tarjeta-con-transacciones") && (
               <button type="button" className="btn btn-secondary" onClick={handleCancel}>
                 Cancelar
               </button>
@@ -288,7 +411,12 @@ const GlobalModal = () => {
             <button
               type="button"
               ref={btnGuardarRef}
-              className={`btn m-0 py-0 morph-btn ${ guardado ? "btn-success" : errorForm || modal.tipo === "eliminar-transaccion" ? "btn-danger" : "btn-primary" }`}
+              className={`btn m-0 py-0 morph-btn ${ 
+                guardado ? "btn-success" : 
+                errorForm || modal.tipo === "eliminar-transaccion" || modal.tipo === "eliminar-tarjeta" ? "btn-danger" : 
+                modal.tipo === "tarjeta-con-transacciones" ? "btn-warning" :
+                "btn-primary" 
+              }`}
               onClick={handleSave}
               disabled={guardando || guardado || morphing || !!errorForm}
               style={{
@@ -309,7 +437,9 @@ const GlobalModal = () => {
                   <span className="flex-grow-1">{errorForm}</span>
                 </div>
               ) : (
-                modal.tipo === "eliminar-transaccion" ? "Eliminar" : "Guardar"
+                modal.tipo === "eliminar-transaccion" || modal.tipo === "eliminar-tarjeta" ? "Eliminar" : 
+                modal.tipo === "tarjeta-con-transacciones" ? "Entendido" :
+                "Guardar"
               )}
             </button>
           </div>

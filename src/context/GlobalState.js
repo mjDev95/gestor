@@ -5,6 +5,12 @@ import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, query, where } 
 import { useAuth } from './AuthContext';
 import { useMonth  } from './monthContext'; 
 import { getRangoPeriodo } from '../utils/formatDate';
+import { 
+  obtenerMensualidadesPorTarjeta, 
+  obtenerMensualidadesPorMes,
+  calcularResumenMSIPorTarjeta,
+  obtenerTodasMensualidadesActivas
+} from '../services/msiService';
 
 const GlobalContext = createContext();
 
@@ -249,6 +255,151 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  // Función para agregar una tarjeta
+  const addTarjeta = async (tarjetaData) => {
+    try {
+      const nuevaRef = await addDoc(collection(db, 'tarjetas'), {
+        ...tarjetaData,
+        userId: user.uid,
+      });
+
+      const nuevaTarjeta = { id: nuevaRef.id, ...tarjetaData };
+      setTarjetas(prev => [...prev, nuevaTarjeta]);
+      
+      return true;
+    } catch (error) {
+      console.error('Error al agregar tarjeta:', error);
+      return false;
+    }
+  };
+
+  // Función para actualizar una tarjeta
+  const updateTarjeta = async (tarjetaData) => {
+    try {
+      if (!tarjetaData.id) {
+        throw new Error('🚨 No se puede editar una tarjeta sin ID');
+      }
+
+      const ref = doc(db, 'tarjetas', tarjetaData.id);
+      const { id, ...data } = tarjetaData;
+
+      await updateDoc(ref, {
+        ...data,
+        userId: user.uid
+      });
+
+      setTarjetas(prev => 
+        prev.map(t => t.id === tarjetaData.id ? { ...t, ...data } : t)
+      );
+      
+      return true;
+    } catch (error) {
+      console.error('Error al actualizar tarjeta:', error);
+      return false;
+    }
+  };
+
+  // Función para eliminar una tarjeta
+  const deleteTarjeta = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'tarjetas', id));
+      setTarjetas(prev => prev.filter(t => t.id !== id));
+      return { success: true };
+    } catch (error) {
+      console.error('Error al eliminar tarjeta:', error);
+      return { 
+        success: false, 
+        message: error.message || 'Error al eliminar la tarjeta'
+      };
+    }
+  };
+
+  // Función para verificar si una tarjeta tiene transacciones o MSI asociados
+  const verificarTarjetaTieneTransacciones = async (tarjetaId) => {
+    try {
+      console.log('🔍 Verificando transacciones para tarjeta:', tarjetaId);
+
+      // Verificar si hay transacciones asociadas a esta tarjeta (sin filtro de fecha para evitar índice compuesto)
+      const gastosQuery = query(
+        collection(db, 'gastos'),
+        where('userId', '==', user.uid),
+        where('tarjetaId', '==', tarjetaId)
+      );
+      
+      const ingresosQuery = query(
+        collection(db, 'ingresos'),
+        where('userId', '==', user.uid),
+        where('tarjetaId', '==', tarjetaId)
+      );
+
+      const [gastosSnapshot, ingresosSnapshot] = await Promise.all([
+        getDocs(gastosQuery),
+        getDocs(ingresosQuery)
+      ]);
+
+      console.log('📊 Resultados:', { 
+        gastos: gastosSnapshot.size, 
+        ingresos: ingresosSnapshot.size 
+      });
+
+      const totalTransacciones = gastosSnapshot.size + ingresosSnapshot.size;
+      
+      if (totalTransacciones > 0) {
+        console.log('⚠️ Tarjeta tiene transacciones asociadas');
+        return {
+          tieneTransacciones: true,
+          totalTransacciones,
+          mensaje: `Esta tarjeta tiene ${totalTransacciones} transacción${totalTransacciones > 1 ? 'es' : ''} asociada${totalTransacciones > 1 ? 's' : ''}.`
+        };
+      }
+
+      // Verificar MSI asociados (los MSI son independientes del periodo)
+      const msiQuery = query(
+        collection(db, 'msi'),
+        where('userId', '==', user.uid),
+        where('tarjetaId', '==', tarjetaId)
+      );
+      
+      const msiSnapshot = await getDocs(msiQuery);
+      
+      console.log('💳 MSI encontrados:', msiSnapshot.size);
+      
+      if (!msiSnapshot.empty) {
+        console.log('⚠️ Tarjeta tiene MSI asociados');
+        return {
+          tieneTransacciones: true,
+          totalMSI: msiSnapshot.size,
+          mensaje: `Esta tarjeta tiene ${msiSnapshot.size} pago${msiSnapshot.size > 1 ? 's' : ''} a meses sin intereses activo${msiSnapshot.size > 1 ? 's' : ''}.`
+        };
+      }
+
+      console.log('✅ Tarjeta sin transacciones ni MSI');
+      return { tieneTransacciones: false };
+    } catch (error) {
+      console.error('❌ Error al verificar transacciones:', error);
+      return { tieneTransacciones: false, error: error.message };
+    }
+  };
+
+  // Función para manejar el guardado de una tarjeta
+  const handleSaveTarjeta = async (tarjetaData, modo = 'crear') => {
+    if (!tarjetaData.banco || !tarjetaData.terminacion) {
+      alert("Por favor, complete todos los campos obligatorios.");
+      return false;
+    }
+
+    try {
+      if (modo === 'editar') {
+        return await updateTarjeta(tarjetaData);
+      } else {
+        return await addTarjeta(tarjetaData);
+      }
+    } catch (error) {
+      alert("Hubo un error al guardar la tarjeta.");
+      return false;
+    }
+  };
+
   return (
     <GlobalContext.Provider
       value={{
@@ -262,7 +413,15 @@ export const GlobalProvider = ({ children }) => {
         addTransaction,
         deleteTransaction,
         handleSaveExpense,
-        updateTransaction
+        updateTransaction,
+        handleSaveTarjeta,
+        deleteTarjeta,
+        verificarTarjetaTieneTransacciones,
+        // Funciones MSI
+        obtenerMensualidadesPorTarjeta: (tarjetaId) => obtenerMensualidadesPorTarjeta(tarjetaId, user?.uid),
+        obtenerMensualidadesPorMes: (mesAnio) => obtenerMensualidadesPorMes(user?.uid, mesAnio),
+        calcularResumenMSIPorTarjeta,
+        obtenerTodasMensualidadesActivas: () => obtenerTodasMensualidadesActivas(user?.uid)
       }}
     >
       {children}

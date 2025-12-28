@@ -157,6 +157,43 @@ body, p, li {
   height: 100vh;   
   height: 100dvh; 
 }
+/*--------------------------------------------------------------
+BOOTSTRAP OVERRIDES - DROPDOWN
+--------------------------------------------------------------*/
+.dropdown-menu{
+  background-color: var(--modo-claro) !important;
+  border-color: var(--modo-border) !important;
+  color: var(--texto-principal) !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  
+  .dropdown-item {
+    color: var(--texto-secundario) !important;
+    transition: all 0.2s ease;
+    
+    &:hover, &:focus {
+      background-color: var(--modo-oscuro) !important;
+      color: var(--texto-principal) !important;
+    }
+    
+    &.text-danger {
+      color: var(--color-second) !important;
+      
+      &:hover, &:focus {
+        background-color: var(--modo-oscuro) !important;
+        color: var(--color-second) !important;
+      }
+    }
+    
+    i {
+      opacity: 0.7;
+    }
+  }
+  
+  .dropdown-divider {
+    border-color: var(--modo-border) !important;
+    opacity: 1;
+  }
+}
 
 /*--------------------------------------------------------------
 SIDEBAR
@@ -416,6 +453,60 @@ Formularios
 }
 
 /*--------------------------------------------------------------
+BOOTSTRAP OVERRIDES - CARDS
+--------------------------------------------------------------*/
+.card {
+  background-color: var(--modo-oscuro) !important;
+  border-color: var(--modo-border) !important;
+  color: var(--texto-secundario) !important;
+  
+  .card-header, .card-footer {
+    background-color: transparent !important;
+    border-color: var(--modo-border) !important;
+  }
+  
+  .card-body {
+    color: var(--texto-secundario) !important;
+  }
+}
+
+/*--------------------------------------------------------------
+BOOTSTRAP OVERRIDES - BUTTONS
+--------------------------------------------------------------*/
+.btn-link {
+  color: var(--texto-principal) !important;
+  text-decoration: none;
+  
+  &:hover, &:focus {
+    color: var(--color-main) !important;
+  }
+}
+
+.btn-close {
+  filter: var(--bs-btn-close-white-filter);
+  opacity: 0.7;
+  
+  &:hover {
+    opacity: 1;
+  }
+}
+
+html.dark {
+  .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+  }
+}
+
+/*--------------------------------------------------------------
+BOOTSTRAP OVERRIDES - BADGES
+--------------------------------------------------------------*/
+.badge {
+  &.bg-success {
+    background-color: #198754 !important;
+  }
+}
+
+/*--------------------------------------------------------------
 Pagina en construccion
 --------------------------------------------------------------*/
 img{
@@ -489,4 +580,34 @@ img{
 
 @media (min-width: 1200px) {
 
+}
+
+/*--------------------------------------------------------------
+UTILITY CLASSES
+--------------------------------------------------------------*/
+
+// Clase reutilizable para círculos de fecha con color principal
+.date-circle {
+  width: 55px;
+  height: 55px;
+  background-color: rgba(209, 248, 11, 0.15); // Color principal con 15% opacidad
+  color: var(--color-main);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  
+  .date-day {
+    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  
+  .date-month {
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 0.65rem;
+  }
 }

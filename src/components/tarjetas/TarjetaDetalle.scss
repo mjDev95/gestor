@@ -1,0 +1,101 @@
+.tarjeta-detalle-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+
+  .tarjeta-detalle-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+
+    .detalle-header {
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 1rem;
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+    }
+
+    .tarjeta-visual {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .info-section {
+      .info-card {
+        border: 1px solid #dee2e6;
+        transition: all 0.2s ease;
+
+        &:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        p {
+          margin: 0;
+        }
+      }
+    }
+
+    .gastos-section {
+      .p-3 {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+      }
+    }
+
+    .transacciones-section {
+      .transacciones-list {
+        &::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: #f1f3f5;
+          border-radius: 3px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #adb5bd;
+          border-radius: 3px;
+
+          &:hover {
+            background: #868e96;
+          }
+        }
+
+        .text-xs {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .tarjeta-detalle-overlay {
+    .tarjeta-detalle-container {
+      max-width: 95vw;
+      padding: 1.5rem;
+      max-height: 80vh;
+    }
+  }
+}
