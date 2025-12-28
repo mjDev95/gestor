@@ -21,12 +21,10 @@ export const guardarConfiguracionUsuario = async (userId, configuracion) => {
       const docRef = documento.ref; // Referencia al documento existente
 
       await setDoc(docRef, configuracion, { merge: true }); // Actualizar solo los campos especificados
-      console.log("✅ Configuración actualizada en Firebase para el usuario:", userId);
     } else {
       // Si no se encuentra el documento, crear uno nuevo
       const nuevoDocRef = doc(configuracionesRef); // Generar un nuevo documento con un ID automático
       await setDoc(nuevoDocRef, { userId, ...configuracion });
-      console.log("✅ Nuevo documento creado en Firebase para el usuario:", userId);
     }
   } catch (error) {
     console.error("🚨 Error al guardar configuración:", error);
@@ -38,8 +36,6 @@ export const obtenerConfiguracionUsuario = async (userId) => {
     if (!userId) {
       throw new Error("El userId es obligatorio para obtener la configuración.");
     }
-
-    console.log(`🔍 Buscando documento en la colección 'configuraciones' para el usuario: ${userId}`);
 
     // Referencia a la colección "configuraciones"
     const configuracionesRef = collection(db, "configuraciones");

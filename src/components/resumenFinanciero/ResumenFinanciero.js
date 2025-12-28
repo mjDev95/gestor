@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useGlobalState } from "../../context/GlobalState";
 import { useMonth } from "../../context/monthContext";
 import "./ResumenFinanciero.scss";
@@ -12,27 +12,50 @@ const ResumenFinanciero = () => {
   const { transactions, loading, mesAnterior } = useGlobalState(); 
   const { mesSeleccionado, rangoFechas } = useMonth();
 
-  if (loading || !mesSeleccionado) {
-    return (
-      <div className="d-flex justify-content-center align-items-center py-5">
-        <div className="spinner-border" role="status" />
-      </div>
-    );
-  }
+  // Memoizar cálculos de transacciones por tipo
+  const ingresosActual = useMemo(() => 
+    getMonthTransactions(transactions.actual, "ingresos"),
+    [transactions.actual]
+  );
 
-  const ingresosActual = getMonthTransactions(transactions.actual, "ingresos");
-  const ingresosPrevio = getMonthTransactions(transactions.previo, "ingresos");
+  const ingresosPrevio = useMemo(() => 
+    getMonthTransactions(transactions.previo, "ingresos"),
+    [transactions.previo]
+  );
 
-  const gastosActual = getMonthTransactions(transactions.actual, "gastos");
-  const gastosPrevio = getMonthTransactions(transactions.previo, "gastos");
+  const gastosActual = useMemo(() => 
+    getMonthTransactions(transactions.actual, "gastos"),
+    [transactions.actual]
+  );
 
-  const ahorroActual = getMonthTransactions(transactions.actual, "ahorro");
-  const ahorroPrevio = getMonthTransactions(transactions.previo, "ahorro");
+  const gastosPrevio = useMemo(() => 
+    getMonthTransactions(transactions.previo, "gastos"),
+    [transactions.previo]
+  );
 
-  const saldoActual = ingresosActual - gastosActual;
-  const saldoPrevio = ingresosPrevio - gastosPrevio;
+  const ahorroActual = useMemo(() => 
+    getMonthTransactions(transactions.actual, "ahorro"),
+    [transactions.actual]
+  );
 
-  const resumen = [
+  const ahorroPrevio = useMemo(() => 
+    getMonthTransactions(transactions.previo, "ahorro"),
+    [transactions.previo]
+  );
+
+  // Memoizar cálculos de saldos
+  const saldoActual = useMemo(() => 
+    ingresosActual - gastosActual,
+    [ingresosActual, gastosActual]
+  );
+
+  const saldoPrevio = useMemo(() => 
+    ingresosPrevio - gastosPrevio,
+    [ingresosPrevio, gastosPrevio]
+  );
+
+  // Memoizar resumen completo
+  const resumen = useMemo(() => [
     {
       titulo: "Saldo disponible",
       valor: saldoActual,
@@ -61,12 +84,21 @@ const ResumenFinanciero = () => {
       clase: "ahorro",
       Icon: Coin,
     },
-  ];
+  ], [saldoActual, saldoPrevio, ingresosActual, ingresosPrevio, gastosActual, gastosPrevio, ahorroActual, ahorroPrevio]);
 
-  // Calcula el rango del periodo anterior
-  const periodoAnterior = mesAnterior && rangoFechas
-    ? getRangoPeriodo(mesAnterior, rangoFechas)
-    : null;
+  // Calcula el rango del periodo anterior - memoizado
+  const periodoAnterior = useMemo(() => 
+    mesAnterior && rangoFechas ? getRangoPeriodo(mesAnterior, rangoFechas) : null,
+    [mesAnterior, rangoFechas]
+  );
+
+  if (loading || !mesSeleccionado) {
+    return (
+      <div className="d-flex justify-content-center align-items-center py-5">
+        <div className="spinner-border" role="status" />
+      </div>
+    );
+  }
 
   return (
     <div className="row g-2 g-lg-4 resumen-financiero justify-content-between align-items-stretch">

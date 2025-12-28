@@ -323,6 +323,4 @@ export const cargarTransaccionesFicticias = async (userId, tarjetasCredito) => {
       fecha: tr.fecha.toDate().toISOString().split('T')[0], // Formato YYYY-MM-DD
     });
   }
-  
-  console.log('✅ Transacciones ficticias cargadas en gastos:', transacciones.length);
 };

@@ -97,7 +97,6 @@ const ExpenseForm = forwardRef(({ handleSaveExpense, initialData = null, modo = 
         
         // Pasar la información de la tarjeta para calcular fechas correctamente
         await guardarGastoConMSI(gastoMSI, user.uid, tarjetaSeleccionada);
-        console.log('✅ Gasto con MSI guardado exitosamente');
       } else {
         // Gasto normal (sin MSI)
         const transaccion = {

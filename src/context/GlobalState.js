@@ -84,8 +84,6 @@ const obtenerTransaccionesMes = async (userId, mesSeleccionado, rangoFechas) => 
     const inicioFecha = rango.inicio;
     const finFecha = rango.fin;
 
-    console.log("🔍 Consultando transacciones para usuario:", userId, "| Rango:", inicioFecha, "→", finFecha,"|");
-
     const colecciones = ["gastos", "ingresos"];
     const todas = [];
 
@@ -130,8 +128,6 @@ export const GlobalProvider = ({ children }) => {
       const anioAnterior = mes - 1 > 0 ? anio : anio - 1;
       const mesAnteriorStr = `${anioAnterior}-${mesAnterior}`;
       const periodoAnterior = getRangoPeriodo(mesAnteriorStr, rangoFechas);
-
-      console.log("🔍 Período anterior calculado:", periodoAnterior);
 
       if (!periodoAnterior) return; // Evitar errores si `null`
 
@@ -341,8 +337,6 @@ export const GlobalProvider = ({ children }) => {
   // Función para verificar si una tarjeta tiene transacciones o MSI asociados
   const verificarTarjetaTieneTransacciones = async (tarjetaId) => {
     try {
-      console.log('🔍 Verificando transacciones para tarjeta:', tarjetaId);
-
       // Verificar si hay transacciones asociadas a esta tarjeta (sin filtro de fecha para evitar índice compuesto)
       const gastosQuery = query(
         collection(db, 'gastos'),

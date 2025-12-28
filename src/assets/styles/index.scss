@@ -512,9 +512,13 @@ Pagina en construccion
 img{
   &.img-construccion {
     -webkit-mask-image: url("/assets/img/stay.svg");
+    mask-image: url("/assets/img/stay.svg");
     -webkit-mask-size: contain;
+    mask-size: contain;
     -webkit-mask-position: center center;
+    mask-position: center center;
     -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
     max-width: clamp(160px, 30vh, 270px);
     height: clamp(160px, 30vh, 270px);
     object-fit: cover;

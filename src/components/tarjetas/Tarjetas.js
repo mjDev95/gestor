@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import TarjetasSwiper from "./TarjetasSwiper";
@@ -9,7 +9,6 @@ import { useGlobalState } from '../../context/GlobalState';
 import { useAuth } from '../../context/AuthContext';
 import "./TarjetasSwiper.scss";
 import { getPorcentajesPorBanco, getDetallesTarjeta } from "../../utils/tarjetasStats";
-import { cargarDatosFicticiosCompletos } from "../../utils/cargarTransaccionesFicticias";
 
 function Tarjetas() {
   const { tarjetas, transactions } = useGlobalState();
@@ -17,12 +16,36 @@ function Tarjetas() {
   const { nombre } = useParams();
   const navigate = useNavigate();
   const [tarjetaSeleccionada, setTarjetaSeleccionada] = useState(null);
-  const [cargando, setCargando] = useState(false);
 
-  // Sincronizar con URL
+  // Memoizar cálculos de porcentajes
+  const porcentajesCredito = useMemo(() => 
+    getPorcentajesPorBanco({
+      tarjetas,
+      transacciones: transactions.actual,
+      tipo: "Crédito"
+    }), [tarjetas, transactions.actual]
+  );
+
+  const porcentajesDebito = useMemo(() => 
+    getPorcentajesPorBanco({
+      tarjetas,
+      transacciones: transactions.actual,
+      tipo: "Débito"
+    }), [tarjetas, transactions.actual]
+  );
+
+  // Memoizar handlers
+  const handleSelectCard = useCallback((tarjeta) => {
+    navigate(`/dashboard/tarjetas/${tarjeta.slug}`);
+  }, [navigate]);
+
+  const handleBack = useCallback(() => {
+    navigate('/dashboard/tarjetas');
+  }, [navigate]);
+
+  // Sincronizar con URL - Memoizar búsqueda de tarjeta
   useEffect(() => {
     if (nombre && tarjetas.length > 0) {
-      // Buscar tarjeta por slug de BD
       const tarjeta = tarjetas.find(t => t.slug === nombre);
       
       if (tarjeta) {
@@ -33,26 +56,6 @@ function Tarjetas() {
       setTarjetaSeleccionada(null);
     }
   }, [nombre, tarjetas, transactions.actual]);
-
-  const handleSelectCard = (tarjeta) => {
-    navigate(`/dashboard/tarjetas/${tarjeta.slug}`);
-  };
-
-  const handleBack = () => {
-    navigate('/dashboard/tarjetas');
-  };
-
-  const porcentajesCredito = getPorcentajesPorBanco({
-    tarjetas,
-    transacciones: transactions.actual,
-    tipo: "Crédito"
-  });
-
-  const porcentajesDebito = getPorcentajesPorBanco({
-    tarjetas,
-    transacciones: transactions.actual,
-    tipo: "Débito"
-  });
 
   return (
     <motion.main

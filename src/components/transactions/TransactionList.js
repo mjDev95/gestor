@@ -1,4 +1,4 @@
-import React , { useState } from 'react';
+import React , { useState, useMemo, useCallback } from 'react';
 import { useGlobalState } from '../../context/GlobalState';
 import { Plus } from 'react-bootstrap-icons';
 import { useMonth } from '../../context/monthContext'; 
@@ -41,37 +41,55 @@ const TransactionList = ({ view = "resumen" }) => {
   // Obtener el rango real de fechas del periodo seleccionado
   const { inicio: fechaInicio, fin: fechaFin } = getRangoPeriodo(mesSeleccionado, rangoFechas);
 
-  // Filtrar las transacciones por el rango de fechas seleccionado
-  const transaccionesFiltradas = transactions.actual.filter((transaccion) => {
-    return transaccion.fecha >= fechaInicio && transaccion.fecha <= fechaFin;
-  });
+  // Memoizar filtrado y ordenamiento de transacciones
+  const transaccionesOrdenadas = useMemo(() => {
+    const filtradas = transactions.actual.filter((transaccion) => {
+      return transaccion.fecha >= fechaInicio && transaccion.fecha <= fechaFin;
+    });
+    
+    return [...filtradas].sort((a, b) => {
+      return new Date(b.fecha) - new Date(a.fecha);
+    });
+  }, [transactions.actual, fechaInicio, fechaFin]);
 
-  const transaccionesOrdenadas = [...transaccionesFiltradas].sort((a, b) => {
-    return new Date(b.fecha) - new Date(a.fecha); // Ordenar por fecha descendente
-  });
-
-  // Handlers para editar/eliminar (puedes implementar la lógica real)
-  const handleEdit = (transaction) => {
+  // Memoizar handlers para evitar recrearlos
+  const handleEdit = useCallback((transaction) => {
     openModal('editar-transaccion', {
       transaction,
       tipo: transaction.tipo, 
       handleSaveExpense,
       user
     });
-  };
-  const handleDelete = (transaction) => {
+  }, [openModal, handleSaveExpense, user]);
+
+  const handleDelete = useCallback((transaction) => {
     openModal('eliminar-transaccion', {
       transaction,
       tipo: transaction.tipo,
       handleDeleteTransaction: deleteTransaction
     });
-  };
+  }, [openModal, deleteTransaction]);
 
-  // Definir tabs antes de usar useSwipeTabs
-  const listaTodas = isDetalle ? transaccionesOrdenadas : transaccionesOrdenadas.slice(0, 5);
-  const listaGastos = isDetalle ? transaccionesOrdenadas.filter(t => t.tipo === "gastos") : transaccionesOrdenadas.filter(t => t.tipo === "gastos").slice(0, 5);
-  const listaIngresos = isDetalle ? transaccionesOrdenadas.filter(t => t.tipo === "ingresos") : transaccionesOrdenadas.filter(t => t.tipo === "ingresos").slice(0, 5);
-  const listaAhorros = isDetalle ? transaccionesOrdenadas.filter(t => t.tipo === "ahorro") : transaccionesOrdenadas.filter(t => t.tipo === "ahorro").slice(0, 5);
+  // Memoizar listas filtradas por tipo
+  const listaTodas = useMemo(() => 
+    isDetalle ? transaccionesOrdenadas : transaccionesOrdenadas.slice(0, 5),
+    [transaccionesOrdenadas, isDetalle]
+  );
+
+  const listaGastos = useMemo(() => {
+    const gastos = transaccionesOrdenadas.filter(t => t.tipo === "gastos");
+    return isDetalle ? gastos : gastos.slice(0, 5);
+  }, [transaccionesOrdenadas, isDetalle]);
+
+  const listaIngresos = useMemo(() => {
+    const ingresos = transaccionesOrdenadas.filter(t => t.tipo === "ingresos");
+    return isDetalle ? ingresos : ingresos.slice(0, 5);
+  }, [transaccionesOrdenadas, isDetalle]);
+
+  const listaAhorros = useMemo(() => {
+    const ahorros = transaccionesOrdenadas.filter(t => t.tipo === "ahorro");
+    return isDetalle ? ahorros : ahorros.slice(0, 5);
+  }, [transaccionesOrdenadas, isDetalle]);
 
   const tabs = isDetalle
     ? [

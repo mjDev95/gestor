@@ -1,32 +1,44 @@
-import Inicio from "../../components/inicio/Inicio";
-import Tarjetas from "../../components/tarjetas/Tarjetas";
-import Transactions from "../../components/transactions/Transactions";
-import Maintenance from "../../views/support/Maintenance";
+import React, { Suspense } from 'react';
+import { LazyInicio, LazyTarjetas, LazyTransactions, LazyMaintenance } from '../lazyComponents';
+
+const LoadingFallback = () => (
+  <div className="d-flex justify-content-center align-items-center vh-100">
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+);
+
+const withSuspense = (Component) => (
+  <Suspense fallback={<LoadingFallback />}>
+    <Component />
+  </Suspense>
+);
 
 const DASHBOARD_ROUTES = [
   {
     path: "",
-    element: <Inicio />,
+    element: withSuspense(LazyInicio),
     name: "Inicio",
   },
   {
     path: "tarjetas",
-    element: <Tarjetas />,
+    element: withSuspense(LazyTarjetas),
     name: "Tarjetas",
   },
   {
     path: "tarjetas/:nombre",
-    element: <Tarjetas />,
+    element: withSuspense(LazyTarjetas),
     name: "Detalle Tarjeta",
   },
   {
     path: "transacciones",
-    element: <Transactions />,
+    element: withSuspense(LazyTransactions),
     name: "Transacciones",
   },
   {
     path: "perfil",
-    element: <Maintenance />,
+    element: withSuspense(LazyMaintenance),
     name: "Perfil",
   },
 ];

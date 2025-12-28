@@ -1,5 +1,4 @@
 const transactionReducer = (state, action) => {
-  console.log("Acción:", action.type, "Payload:", action.payload); 
   switch (action.type) {
     case 'SET_LOADING':
       return {

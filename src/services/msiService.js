@@ -34,8 +34,6 @@ export const guardarGastoConMSI = async (gastoData, userId, tarjeta = null) => {
       fechaCreacion: new Date().toISOString()
     });
 
-    console.log('✅ Gasto de referencia creado:', gastoReferenciaRef.id);
-
     // 2. Crear las mensualidades individuales
     const montoPorMes = monto / mesesSinIntereses;
     const mensualidades = [];
@@ -43,13 +41,6 @@ export const guardarGastoConMSI = async (gastoData, userId, tarjeta = null) => {
     // Obtener día de corte de la tarjeta (si existe)
     const diaCorte = tarjeta?.diaCorte ? parseInt(tarjeta.diaCorte) : null;
     const diaPago = tarjeta?.diaPago ? parseInt(tarjeta.diaPago) : null;
-
-    console.log('🔍 Debug MSI - Tarjeta:', {
-      banco: tarjeta?.banco,
-      diaCorte,
-      diaPago,
-      fechaCompra: fecha
-    });
 
     for (let i = 0; i < mesesSinIntereses; i++) {
       // Calcular la fecha de vencimiento según el ciclo de la tarjeta
@@ -124,13 +115,9 @@ export const guardarGastoConMSI = async (gastoData, userId, tarjeta = null) => {
         notas: `Mensualidad ${i + 1} de ${mesesSinIntereses} - ${nombre}`
       };
 
-      console.log(`📅 Mensualidad ${i + 1}: Vence ${fechaVencimiento.toISOString().split('T')[0]}`);
-
       const mensualidadRef = await addDoc(collection(db, 'msi'), mensualidad);
       mensualidades.push({ id: mensualidadRef.id, ...mensualidad });
     }
-
-    console.log(`✅ ${mesesSinIntereses} mensualidades creadas`);
 
     return {
       gastoReferenciaId: gastoReferenciaRef.id,
@@ -208,7 +195,6 @@ export const marcarMensualidadPagada = async (mensualidadId) => {
       estado: 'pagado',
       fechaPago: new Date().toISOString()
     });
-    console.log('✅ Mensualidad marcada como pagada');
   } catch (error) {
     console.error('❌ Error al marcar mensualidad como pagada:', error);
     throw error;

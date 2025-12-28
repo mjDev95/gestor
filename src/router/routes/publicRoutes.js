@@ -1,22 +1,34 @@
-import React from "react";
-import AuthForm from '../../views/login/AuthForm';
-import Page404 from "../../views/error404/Page404";
-import Home from "../../views/home/Home";
+import React, { Suspense } from 'react';
+import { LazyLogin, LazyHome, LazyError404 } from '../lazyComponents';
+
+const LoadingFallback = () => (
+  <div className="d-flex justify-content-center align-items-center vh-100">
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+);
+
+const withSuspense = (Component) => (
+  <Suspense fallback={<LoadingFallback />}>
+    <Component />
+  </Suspense>
+);
 
 const PUBLIC_ROUTE = [
   {
     path: "/",
-    element: <Home />, // Página independiente para "/"
+    element: withSuspense(LazyHome),
     name: "Home",
   },
   {
     path: "/login",
-    element: <AuthForm />, // Página de login
+    element: withSuspense(LazyLogin),
     name: "Login",
   },
   {
     path: "/404",
-    element: <Page404 />, // Página 404
+    element: withSuspense(LazyError404),
     name: "Pagina no encontrada",
   },
 ];

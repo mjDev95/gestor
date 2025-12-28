@@ -31,12 +31,6 @@ const SelectorMeses = () => {
     });
   }, [meses, rangoFechas]);
 
-  useEffect(() => {
-    if (periodos.length) {
-      console.log('Periodos generados hoy:', periodos);
-    }
-  }, [periodos]);
-
   // Detecta el periodo activo según la fecha actual
   useEffect(() => {
     const hoy = new Date();

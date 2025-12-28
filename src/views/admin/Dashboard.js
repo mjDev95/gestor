@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import SideBar from '../../components/sidebar/SideBar';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext";
@@ -15,12 +15,12 @@ const Dashboard = () => {
   const containerRef = useRef(null);
   const lastScrollTop = useRef(0);
 
-  const handleLogoutClick = async () => {
+  const handleLogoutClick = useCallback(async () => {
     await logout();
     navigate('/');
-  };
+  }, [logout, navigate]);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
 
@@ -42,7 +42,7 @@ const Dashboard = () => {
         },
       })
     );
-  };
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -53,8 +53,6 @@ const Dashboard = () => {
       el.scrollTop = 0;
     }
   }, [activeSection]);
-
-  useEffect(() => {}, [mesSeleccionado]);
 
   return (
     <>
