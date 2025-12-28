@@ -258,12 +258,24 @@ export const GlobalProvider = ({ children }) => {
   // Función para agregar una tarjeta
   const addTarjeta = async (tarjetaData) => {
     try {
+      // Generar slug único: banco-terminacion
+      const toSlug = (str) => str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      
+      const banco = toSlug(tarjetaData.banco || tarjetaData.nombre || 'tarjeta');
+      const slug = `${banco}-${tarjetaData.terminacion || ''}`;
+
       const nuevaRef = await addDoc(collection(db, 'tarjetas'), {
         ...tarjetaData,
+        slug, // Guardar slug en BD
         userId: user.uid,
       });
 
-      const nuevaTarjeta = { id: nuevaRef.id, ...tarjetaData };
+      const nuevaTarjeta = { id: nuevaRef.id, ...tarjetaData, slug };
       setTarjetas(prev => [...prev, nuevaTarjeta]);
       
       return true;
@@ -280,16 +292,28 @@ export const GlobalProvider = ({ children }) => {
         throw new Error('🚨 No se puede editar una tarjeta sin ID');
       }
 
+      // Generar slug actualizado
+      const toSlug = (str) => str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      
+      const banco = toSlug(tarjetaData.banco || tarjetaData.nombre || 'tarjeta');
+      const slug = `${banco}-${tarjetaData.terminacion || ''}`;
+
       const ref = doc(db, 'tarjetas', tarjetaData.id);
       const { id, ...data } = tarjetaData;
 
       await updateDoc(ref, {
         ...data,
+        slug, // Actualizar slug en BD
         userId: user.uid
       });
 
       setTarjetas(prev => 
-        prev.map(t => t.id === tarjetaData.id ? { ...t, ...data } : t)
+        prev.map(t => t.id === tarjetaData.id ? { ...t, ...data, slug } : t)
       );
       
       return true;

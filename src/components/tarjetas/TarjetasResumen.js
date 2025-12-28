@@ -5,7 +5,7 @@ import { useDashboard } from '../../context/dashboardContext';
 
 const TarjetasResumen = ({ className = '' }) => {
   const { tarjetas = [] } = useGlobalState();
-  const { setActiveSection } = useDashboard();
+  const { navigateToSection } = useDashboard();
 
   const totalTarjetas = tarjetas.length;
   const primeraDos = tarjetas.slice(0, 2);
@@ -33,7 +33,7 @@ const TarjetasResumen = ({ className = '' }) => {
               key={t.id || i}
               className="card flex-fill shadow-sm p-0 overflow-hidden"
               style={{ borderRadius: 12, minHeight: 120, cursor: 'pointer' }}
-              onClick={() => setActiveSection && setActiveSection('tarjetas')}
+              onClick={() => navigateToSection && navigateToSection('tarjetas')}
               aria-label={`Ver tarjeta ${t.banco || t.nombre}`}
             >
               <div
@@ -62,7 +62,7 @@ const TarjetasResumen = ({ className = '' }) => {
       <div className="d-flex justify-content-end">
         <button
           className="btn btn-outline-primary btn-sm"
-          onClick={() => setActiveSection && setActiveSection('tarjetas')}
+          onClick={() => navigateToSection && navigateToSection('tarjetas')}
         >
           Ver tarjetas
         </button>

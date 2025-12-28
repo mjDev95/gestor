@@ -9,7 +9,7 @@ import './SideBar.scss';
 
 const SideBar = ({ variant = "desktop" }) => {
   const { abrirPerfil } = usePerfil();
-  const { activeSection, setActiveSection } = useDashboard();
+  const { activeSection, navigateToSection } = useDashboard();
   const { openModal } = useModal();
   const { handleSaveExpense, user } = useGlobalState();
   const sidebarRef = useRef(null);
@@ -72,7 +72,7 @@ const SideBar = ({ variant = "desktop" }) => {
     <li
       ref={(el) => (buttonsRefs.current[section] = el)}
       className={`nav-item text-center ${activeSection === section ? "active" : ""}`}
-      onClick={onClick || (() => setActiveSection(section))}
+      onClick={onClick || (() => navigateToSection(section))}
     >
       <button data-section={section} className={`btn btn-sidebar ${variant === "mobile" ? "w-100 p-0" : ""} mx-auto my-0 my-lg-3 mx-lg-3 ${activeSection === section ? "active" : ""}`} >
         <div className="d-flex flex-column align-items-center d-md-block">

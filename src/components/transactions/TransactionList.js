@@ -28,7 +28,7 @@ const TransactionList = ({ view = "resumen" }) => {
   const { transactions, loading, error } = useGlobalState();
   const { mesSeleccionado, rangoFechas } = useMonth();
   const { handleSaveExpense, deleteTransaction, user } = useGlobalState();
-  const { setActiveSection } = useDashboard();
+  const { navigateToSection } = useDashboard();
   const { openModal } = useModal();
   const [activeTab, setActiveTab] = useState(() => {
     if (view === "detalle") return "gastos"; 
@@ -101,7 +101,7 @@ const TransactionList = ({ view = "resumen" }) => {
         <h2 className="text-start mb-0">
           {isDetalle ? "Movimientos" : "Transacciones recientes"}
         </h2>
-        <button className="btn btn-primary rounded px-lg-5 ms-auto me-lg-0 btn-list" onClick={() => isDetalle ? openModal("transaccion", { handleSaveExpense, user }) : setActiveSection("transacciones") } >
+        <button className="btn btn-primary rounded px-lg-5 ms-auto me-lg-0 btn-list" onClick={() => isDetalle ? openModal("transaccion", { handleSaveExpense, user }) : navigateToSection("transacciones") } >
           {isDetalle ? ( <> Agregar <Plus size={20} /> </> ) : ( "Ver todas" )}
         </button>
       </div>

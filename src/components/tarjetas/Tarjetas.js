@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useParams, useNavigate } from "react-router-dom";
 import TarjetasSwiper from "./TarjetasSwiper";
 import TarjetaDetalle from "./TarjetaDetalle";
 import DonutComparativoTarjetas from "./DonutComparativoTarjetas";
@@ -13,16 +14,32 @@ import { cargarDatosFicticiosCompletos } from "../../utils/cargarTransaccionesFi
 function Tarjetas() {
   const { tarjetas, transactions } = useGlobalState();
   const { user } = useAuth();
+  const { nombre } = useParams();
+  const navigate = useNavigate();
   const [tarjetaSeleccionada, setTarjetaSeleccionada] = useState(null);
   const [cargando, setCargando] = useState(false);
 
+  // Sincronizar con URL
+  useEffect(() => {
+    if (nombre && tarjetas.length > 0) {
+      // Buscar tarjeta por slug de BD
+      const tarjeta = tarjetas.find(t => t.slug === nombre);
+      
+      if (tarjeta) {
+        const detalles = getDetallesTarjeta(tarjeta, transactions.actual);
+        setTarjetaSeleccionada(detalles);
+      }
+    } else {
+      setTarjetaSeleccionada(null);
+    }
+  }, [nombre, tarjetas, transactions.actual]);
+
   const handleSelectCard = (tarjeta) => {
-    const detalles = getDetallesTarjeta(tarjeta, transactions.actual);
-    setTarjetaSeleccionada(detalles);
+    navigate(`/dashboard/tarjetas/${tarjeta.slug}`);
   };
 
   const handleBack = () => {
-    setTarjetaSeleccionada(null);
+    navigate('/dashboard/tarjetas');
   };
 
   const porcentajesCredito = getPorcentajesPorBanco({
